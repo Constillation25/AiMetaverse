@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Constellation25 | Sovereign Platform</title>
+<style>
+:root{--bg:#0b0f19;--surface:#111827;--border:#1f2937;--text:#f3f4f6;--muted:#9ca3af;
+--c1:#38bdf8;--c2:#a78bfa;--c3:#34d399;--c4:#f472b6;--font:system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0;font-family:var(--font)}
+body{background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
+.app{max-width:1400px;margin:0 auto;padding:1.5rem}
+header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1.5rem}
+h1{font-size:1.6rem;background:linear-gradient(90deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.tab{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.5rem 1rem;border-radius:6px;cursor:pointer;transition:.2s}
+.tab:hover{border-color:var(--c1);color:var(--text)}.tab.active{background:var(--c1);color:var(--bg);border-color:var(--c1)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;transition:.2s;cursor:pointer;position:relative}
+.card:hover{border-color:var(--c1);transform:translateY(-2px)}
+.card h3{font-size:.95rem;color:var(--c1);margin-bottom:.5rem}
+.card p{font-size:.8rem;color:var(--muted);margin-bottom:.5rem}
+.tag{position:absolute;top:10px;right:10px;padding:2px 6px;background:rgba(56,189,248,0.15);color:var(--c1);border-radius:10px;font-size:.7rem;text-transform:uppercase}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
+.stat{background:var(--surface);border:1px solid var(--border);padding:.8rem;border-radius:8px}
+.stat strong{display:block;font-size:1.5rem;margin-bottom:.2rem}
+footer{text-align:center;padding:2rem 0;color:var(--muted);border-top:1px solid var(--border);margin-top:3rem;font-size:.8rem}
+@media(max-width:768px){header{flex-direction:column;align-items:flex-start;gap:1rem}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header><h1>CONSTELLATION25</h1><div id="status">● Platform Active</div></header>
+  <div class="meta" id="meta"></div>
+  <div class="tabs" id="tabs"></div>
+  <div class="grid" id="content"></div>
+  <footer>© 2026 Constellation25 • Sovereign Stack • Zero Gates • 27 Modules • 25 Agents</footer>
+</div>
+<script>
+const MODULES = [
+  "CoreKernel","NeuralRouter","AgentOrchestrator","DataLedger","AuthlessGateway",
+  "CommerceEngine","VideoProcessing","LegalCompliance","MetaverseCore","FileSync",
+  "GammaParser","NotebookExecutor","BananiValidator","PrototypeSandbox","UIRenderer",
+  "AssetMapper","NetworkMesh","CryptoWallet","APIGateway","TaskScheduler",
+  "Telemetry","CacheManager","StorageOptimizer","SecurityShield","DeploymentPipeline",
+  "DocumentationHub","EarthRouter"
+];
+const AGENTS = Array.from({length:25},(_,i)=>`C25-${String(i+1).padStart(2,'0')}`);
+const ASSETS = { html: [    "/data/data/com.termux/files/home/constellation25/data/fixed_html/Qwen Studio.html",
+    "/data/data/com.termux/files/home/constellation25/data/fixed_html/Qwen_Studio.html",
+    "/data/data/com.termux/files/home/constellation25/data/fixed_html/1_-_Let_me_know_if_you_have_any_questions.html",
+    "/data/data/com.termux/files/home/constellation25/data/mht_converted/Qwen_Studio.html",
+    "/data/data/com.termux/files/home/constellation25/data/mht_converted/1_-_Let_me_know_if_you_have_any_questions.html",
+    "/data/data/com.termux/files/home/constellation25/data/mht_evidence/Qwen_Studio.html",
+    "/data/data/com.termux/files/home/constellation25/data/mht_evidence/1_-_Let_me_know_if_you_have_any_questions.html",
+    "/data/data/com.termux/files/home/constellation25/static/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-addon/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-addon/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-console-v5/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-console-v5/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-deploy-1/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-deploy-1/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-deploy/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-deploy/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-final-deploy-1/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-final-deploy-1/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-final-deploy/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-final-deploy/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-fresh-build-1/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-fresh-build-1/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-fresh-build/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-fresh-build/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-agents/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25-agents/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25_backup_20260307/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25_backup_20260307/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25_backup_20260319/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25_backup_20260319/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25_backup_20260320/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25_backup_20260320/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25_backup_20260322/index.html",
+    "/data/data/com.termux/files/home/github-repos/c25_backup_20260322/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/2026-03-20_19.48/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/2026-03-20_19.48/index.html",
+    "/data/data/com.termux/files/home/github-repos/2026-03-29_15.49/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/2026-03-29_15.49/index.html",
+    "/data/data/com.termux/files/home/github-repos/22971520-65a0-4178-8759-4d187cbe12b0/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/22971520-65a0-4178-8759-4d187cbe12b0/index.html",
+    "/data/data/com.termux/files/home/github-repos/7db57be9-902b-443b-9d9d-e73f93d2dbc6/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/7db57be9-902b-443b-9d9d-e73f93d2dbc6/index.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive-Stargate-main (1) (1)/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive-Stargate-main (1) (1)/index.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive-Stargate-main (1)/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive-Stargate-main (1)/index.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive-Stargate-main (2)/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive-Stargate-main (2)/index.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive-Stargate-main/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive-Stargate-main/index.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive-Stargate/index.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive-Stargate/platform/PingPangDemo/frontend/index.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive-Stargate/platform/logs/aikre8tive_log_dialog.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive-Stargate/platform/logs/percellified.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive-Stargate/platform/logs/tailwind_view.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive-Stargate/platform/planetary-deployment/static/index.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive-Stargate/platform/qr/affiliate_portal.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive-Stargate/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive_ATA_Deployment/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive_ATA_Deployment/index.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive_CodeVault/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/AiKre8tive_CodeVault/index.html",
+    "/data/data/com.termux/files/home/github-repos/Artifacts-Inspiration-Your-artifacts-Constellation-25-Claude-GitHub-Integration-System/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/Artifacts-Inspiration-Your-artifacts-Constellation-25-Claude-GitHub-Integration-System/index.html",
+    "/data/data/com.termux/files/home/github-repos/Building-the-Worlds-First-AI-Metaverse/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/Building-the-Worlds-First-AI-Metaverse/index.html",
+    "/data/data/com.termux/files/home/github-repos/C25-MASTER-SOURCE-1/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/C25-MASTER-SOURCE-1/index.html",
+    "/data/data/com.termux/files/home/github-repos/C25-MASTER-SOURCE/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/C25-MASTER-SOURCE/index.html",
+    "/data/data/com.termux/files/home/github-repos/C25_FUNDING_20260402/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/C25_FUNDING_20260402/index.html",
+    "/data/data/com.termux/files/home/github-repos/CONSTELLATION-25-LEGAL-EVIDENCE-20260329/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/CONSTELLATION-25-LEGAL-EVIDENCE-20260329/index.html",
+    "/data/data/com.termux/files/home/github-repos/CONSTELLATION-25/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/CONSTELLATION-25/index.html",
+    "/data/data/com.termux/files/home/github-repos/Constellation-25-Agent-Orchestration-System/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/Constellation-25-Agent-Orchestration-System/index.html",
+    "/data/data/com.termux/files/home/github-repos/Constellation25-Investor-Proof-20260323_2114/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/Constellation25-Investor-Proof-20260323_2114/index.html",
+    "/data/data/com.termux/files/home/github-repos/Constellation25_Investor_Package_20260323_2033/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/Constellation25_Investor_Package_20260323_2033/index.html",
+    "/data/data/com.termux/files/home/github-repos/DuckDuckGo/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/DuckDuckGo/index.html",
+    "/data/data/com.termux/files/home/github-repos/FoodLion-Demo-Validated-20260324_0948/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/FoodLion-Demo-Validated-20260324_0948/index.html",
+    "/data/data/com.termux/files/home/github-repos/FoodLion-Ingenico-Qwen-Complete/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/FoodLion-Ingenico-Qwen-Complete/index.html",
+    "/data/data/com.termux/files/home/github-repos/Max_Concurrent_Requests_[SUM],_.../public/index.html",
+    "/data/data/com.termux/files/home/github-repos/Max_Concurrent_Requests_[SUM],_.../index.html",
+    "/data/data/com.termux/files/home/github-repos/Sovereign-Constellation-Ecosystem/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/Sovereign-Constellation-Ecosystem/index.html",
+    "/data/data/com.termux/files/home/github-repos/SovereignGTP/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/SovereignGTP/index.html",
+    "/data/data/com.termux/files/home/github-repos/Sovereign_AI_Runner_Stack_v1/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/Sovereign_AI_Runner_Stack_v1/index.html",
+    "/data/data/com.termux/files/home/github-repos/Stargate-Logos (2)/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/Stargate-Logos (2)/index.html",
+    "/data/data/com.termux/files/home/github-repos/Stargate-Logos (3)/public/index.html",
+    "/data/data/com.termux/files/home/github-repos/Stargate-Logos (3)/index.html"], gamma: [    "/data/data/com.termux/files/home/github-repos/C25-mono/bash/9304d2_gamma_agent.sh",
+    "/data/data/com.termux/files/home/github-repos/C25-mono/bash/6e859b_gamma.sh",
+    "/data/data/com.termux/files/home/github-repos/C25-mono/bash/895cc5_gamma_agent.sh",
+    "/data/data/com.termux/files/home/github-repos/C25-mono/bash/94f0b3_gamma_agent_bak.sh",
+    "/data/data/com.termux/files/home/github-repos/C25-mono/bash/caad8b_gamma_agent.sh",
+    "/data/data/com.termux/files/home/github-repos/C25-mono/html/3ae417_gamma-artifact.html",
+    "/data/data/com.termux/files/home/github-repos/C25-mono/precedence_dossier_20260416T090446Z/timeline/gamma_first_ships.txt",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/engine-cli/src/test/resources/argsfiles/alphagamma.cli",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/nb-api/src/test/resources/nesteddir1/alpha-gamma.yaml",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/nb-api/src/test/resources/nesteddir1/nesteddir2/alpha-gamma.js",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/nb-api/src/test/resources/nesteddir1/nesteddir2/alpha-gamma.yaml",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/nb-api/src/test/resources/nesteddir1/nesteddir2/gamma.yaml",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/virtdata-lib-curves4/src/main/java/io/nosqlbench/virtdata/library/curves4/continuous/int_double/Gamma.java",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/virtdata-lib-curves4/src/main/java/io/nosqlbench/virtdata/library/curves4/continuous/long_double/Gamma.java",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/virtdata-lib-curves4/src/main/java/org/apache/commons/numbers/gamma/Digamma.java",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/virtdata-lib-curves4/src/main/java/org/apache/commons/numbers/gamma/Gamma.java",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/virtdata-lib-curves4/src/main/java/org/apache/commons/numbers/gamma/GammaException.java",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/virtdata-lib-curves4/src/main/java/org/apache/commons/numbers/gamma/InvGamma1pm1.java",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/virtdata-lib-curves4/src/main/java/org/apache/commons/numbers/gamma/LogGamma.java",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/virtdata-lib-curves4/src/main/java/org/apache/commons/numbers/gamma/LogGamma1p.java",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/virtdata-lib-curves4/src/main/java/org/apache/commons/numbers/gamma/LogGammaSum.java",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/virtdata-lib-curves4/src/main/java/org/apache/commons/numbers/gamma/RegularizedGamma.java",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/virtdata-lib-curves4/src/main/java/org/apache/commons/numbers/gamma/Trigamma.java",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/virtdata-lib-curves4/src/main/java/org/apache/commons/rng/sampling/distribution/AhrensDieterMarsagliaTsangGammaSampler.java",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/virtdata-lib-curves4/src/main/java/org/apache/commons/rng/sampling/distribution/InternalGamma.java",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/virtdata-lib-curves4/src/main/java/org/apache/commons/statistics/distribution/GammaDistribution.java",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/virtdata-lib-curves4/src/main/resources/repo/org/apache/commons/commons-numbers-gamma/1.0-SNAPSHOT/commons-numbers-gamma-1.0-SNAPSHOT.jar",
+    "/data/data/com.termux/files/home/github-repos/stargate-grpc-nosqlbench/virtdata-lib-curves4/src/main/resources/repo/org/apache/commons/commons-numbers-gamma/1.0-SNAPSHOT/commons-numbers-gamma-1.0-SNAPSHOT.pom",
+    "/data/data/com.termux/files/home/github-repos/funding-extracted/gamma-artifact-enhanced.html",
+    "/data/data/com.termux/files/home/github-repos/funding-extracted/gamma-artifact.html",
+    "/data/data/com.termux/files/home/github-repos/funding-extracted/gamma-artifact.html.bak",
+    "/data/data/com.termux/files/home/github-repos/funding-extracted/gamma/gamma_docs.md",
+    "/data/data/com.termux/files/home/github-repos/funding-extracted/gamma/gamma_report.pdf",
+    "/data/data/com.termux/files/home/github-repos/funding-extracted/gamma_agent.sh",
+    "/data/data/com.termux/files/home/github-repos/funding-extracted/gamma_agent_bak.sh",
+    "/data/data/com.termux/files/home/github-repos/FacePrintPay/CONSTELLATION25_UNIFIED_SOURCE/C25-mono/bash/94f0b3_gamma_agent_bak.sh",
+    "/data/data/com.termux/files/home/github-repos/FacePrintPay/CONSTELLATION25_UNIFIED_SOURCE/C25-mono/bash/895cc5_gamma_agent.sh",
+    "/data/data/com.termux/files/home/github-repos/FacePrintPay/CONSTELLATION25_UNIFIED_SOURCE/C25-mono/bash/6e859b_gamma.sh",
+    "/data/data/com.termux/files/home/github-repos/FacePrintPay/CONSTELLATION25_UNIFIED_SOURCE/C25-mono/bash/9304d2_gamma_agent.sh",
+    "/data/data/com.termux/files/home/github-repos/FacePrintPay/CONSTELLATION25_UNIFIED_SOURCE/C25-mono/bash/caad8b_gamma_agent.sh",
+    "/data/data/com.termux/files/home/github-repos/FacePrintPay/CONSTELLATION25_UNIFIED_SOURCE/C25-mono/html/3ae417_gamma-artifact.html",
+    "/data/data/com.termux/files/home/github-repos/FacePrintPay/precedence_dossier_20260416T090446Z/timeline/gamma_first_ships.txt",
+    "/data/data/com.termux/files/home/github-repos/FacePrintPay/github-repos/C25-mono/bash/895cc5_gamma_agent.sh",
+    "/data/data/com.termux/files/home/github-repos/FacePrintPay/github-repos/C25-mono/bash/9304d2_gamma_agent.sh",
+    "/data/data/com.termux/files/home/github-repos/FacePrintPay/github-repos/C25-mono/bash/94f0b3_gamma_agent_bak.sh",
+    "/data/data/com.termux/files/home/github-repos/FacePrintPay/github-repos/C25-mono/bash/6e859b_gamma.sh",
+    "/data/data/com.termux/files/home/github-repos/FacePrintPay/github-repos/C25-mono/bash/caad8b_gamma_agent.sh",
+    "/data/data/com.termux/files/home/github-repos/FacePrintPay/github-repos/C25-mono/html/3ae417_gamma-artifact.html",
+    "/data/data/com.termux/files/home/github-repos/constellation25-mono/videocourts/docs/gamma_app_ingest/VideoCourts_Gamma_Import.mdx",
+    "/data/data/com.termux/files/home/github-repos/constellation25-mono/precedence_dossier_20260416T090446Z/timeline/gamma_first_ships.txt"], notebook: [    "/data/data/com.termux/files/home/github-repos/constellation-25/C25_Empire.ipynb",
+    "/data/data/com.termux/files/home/github-repos/c25-agent-core/.vscode/Untitled-1.ipynb",
+    "/data/data/com.termux/files/home/github-repos/pathos/C25_Empire.ipynb",
+    "/data/data/com.termux/files/home/github-repos/blackboxai-1741225183777/.vscode/Untitled-1.ipynb",
+    "/data/data/com.termux/files/home/github-repos/FacePrintPay/github-repos/constellation-25/C25_Empire.ipynb",
+    "/data/data/com.termux/files/home/github-repos/docs-content/tutorials/setup-jupyter-notebook/assets/scaleway-new_notebook.webp",
+    "/data/data/com.termux/files/home/github-repos/docs-content/tutorials/setup-jupyter-notebook/assets/scaleway-running_notebook.webp",
+    "/data/data/com.termux/files/home/github-repos/docs-content/tutorials/setup-jupyter-notebook/assets/scaleway-upload_create_notebook.webp",
+    "/data/data/com.termux/files/home/github-repos/constellation25-mono/c25-agent-core/.vscode/Untitled-1.ipynb",
+    "/data/data/com.termux/files/home/github-repos/c25-sovereign-vault/notebooks/Untitled-1.ipynb",
+    "/data/data/com.termux/files/home/github-repos/c25-sovereign-vault/notebooks/C25_Empire.ipynb",
+    "/data/data/com.termux/files/home/github-repos/c25-sovereign-vault/misc/scaleway-new_notebook.webp",
+    "/data/data/com.termux/files/home/github-repos/c25-sovereign-vault/misc/scaleway-running_notebook.webp",
+    "/data/data/com.termux/files/home/github-repos/c25-sovereign-vault/misc/scaleway-upload_create_notebook.webp",
+    "/data/data/com.termux/files/home/notebook_llms.txt",
+    "/data/data/com.termux/files/home/CONSTELLATION25_UNIFIED_SOURCE/blackboxai-1741225183777/.vscode/Untitled-1.ipynb",
+    "/data/data/com.termux/files/home/CONSTELLATION25_UNIFIED_SOURCE/c25-agent-core/.vscode/Untitled-1.ipynb",
+    "/data/data/com.termux/files/home/CONSTELLATION25_UNIFIED_SOURCE/constellation-25/C25_Empire.ipynb",
+    "/data/data/com.termux/files/home/CONSTELLATION25_UNIFIED_SOURCE/docs-content/tutorials/setup-jupyter-notebook/assets/scaleway-new_notebook.webp",
+    "/data/data/com.termux/files/home/CONSTELLATION25_UNIFIED_SOURCE/docs-content/tutorials/setup-jupyter-notebook/assets/scaleway-running_notebook.webp",
+    "/data/data/com.termux/files/home/CONSTELLATION25_UNIFIED_SOURCE/docs-content/tutorials/setup-jupyter-notebook/assets/scaleway-upload_create_notebook.webp",
+    "/data/data/com.termux/files/home/CONSTELLATION25_UNIFIED_SOURCE/constellation25-mono/c25-agent-core/.vscode/Untitled-1.ipynb",
+    "/data/data/com.termux/files/home/CONSTELLATION25_UNIFIED_SOURCE/pathos/C25_Empire.ipynb",
+    "/data/data/com.termux/files/home/sovereign_empire/mcp_build_sandbox/c25-agents/docs-content/tutorials/setup-jupyter-notebook/assets/scaleway-new_notebook.webp",
+    "/data/data/com.termux/files/home/sovereign_empire/mcp_build_sandbox/c25-agents/docs-content/tutorials/setup-jupyter-notebook/assets/scaleway-running_notebook.webp",
+    "/data/data/com.termux/files/home/sovereign_empire/mcp_build_sandbox/c25-agents/docs-content/tutorials/setup-jupyter-notebook/assets/scaleway-upload_create_notebook.webp",
+    "/data/data/com.termux/files/home/sovereign_empire/mcp_build_sandbox/c25-agents/constellation-25/C25_Empire.ipynb",
+    "/data/data/com.termux/files/home/constellation25-mono/c25-agent-core/.vscode/Untitled-1.ipynb"], banani: [    "/data/data/com.termux/files/home/github-repos/videocourts_backend/src/Object.getPrototypeOf.d.ts",
+    "/data/data/com.termux/files/home/github-repos/videocourts_backend/src/Object.getPrototypeOf.js",
+    "/data/data/com.termux/files/home/github-repos/videocourts_backend/src/Reflect.getPrototypeOf.d.ts",
+    "/data/data/com.termux/files/home/github-repos/videocourts_backend/src/Reflect.getPrototypeOf.js",
+    "/data/data/com.termux/files/home/github-repos/videocourts_backend/src/_set_prototype_of.js",
+    "/data/data/com.termux/files/home/github-repos/videocourts_backend/src/app/api/Object.getPrototypeOf.d.ts",
+    "/data/data/com.termux/files/home/github-repos/videocourts_backend/src/app/api/Object.getPrototypeOf.js",
+    "/data/data/com.termux/files/home/github-repos/videocourts_backend/src/app/api/Reflect.getPrototypeOf.d.ts",
+    "/data/data/com.termux/files/home/github-repos/videocourts_backend/src/app/api/Reflect.getPrototypeOf.js",
+    "/data/data/com.termux/files/home/github-repos/videocourts_backend/src/_getPrototype.js",
+    "/data/data/com.termux/files/home/github-repos/videocourts_backend/src/_isPrototype.js",
+    "/data/data/com.termux/files/home/github-repos/videocourts_backend/src/_get_prototype_of.js",
+    "/data/data/com.termux/files/home/github-repos/videocourts_backend/src/setPrototypeOf.js",
+    "/data/data/com.termux/files/home/github-repos/videocourts_backend/src/getPrototypeOf.js",
+    "/data/data/com.termux/files/home/github-repos/flutter/packages/flutter/lib/src/widgets/sliver_prototype_extent_list.dart",
+    "/data/data/com.termux/files/home/github-repos/flutter/packages/flutter/test/widgets/sliver_prototype_item_extent_test.dart",
+    "/data/data/com.termux/files/home/Constellation25/workspace/obsidian/C25-Archive-20260316_193027/termux-home/home/c25-prototype.sh",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/data/data/com.termux/files/home/github-repos/videocourts_backend/src/Object.getPrototypeOf.d.ts",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/data/data/com.termux/files/home/github-repos/videocourts_backend/src/Reflect.getPrototypeOf.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/data/data/com.termux/files/home/github-repos/videocourts_backend/src/Object.getPrototypeOf.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/data/data/com.termux/files/home/github-repos/videocourts_backend/src/Reflect.getPrototypeOf.d.ts",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/data/data/com.termux/files/home/github-repos/videocourts_backend/src/_get_prototype_of.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/data/data/com.termux/files/home/github-repos/videocourts_backend/src/_set_prototype_of.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/data/data/com.termux/files/home/github-repos/videocourts_backend/src/_getPrototype.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/data/data/com.termux/files/home/github-repos/videocourts_backend/src/app/api/Object.getPrototypeOf.d.ts",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/data/data/com.termux/files/home/github-repos/videocourts_backend/src/app/api/Object.getPrototypeOf.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/data/data/com.termux/files/home/github-repos/videocourts_backend/src/app/api/Reflect.getPrototypeOf.d.ts",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/data/data/com.termux/files/home/github-repos/videocourts_backend/src/app/api/Reflect.getPrototypeOf.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/data/data/com.termux/files/home/github-repos/videocourts_backend/src/_isPrototype.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/data/data/com.termux/files/home/github-repos/videocourts_backend/src/getPrototypeOf.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/data/data/com.termux/files/home/github-repos/videocourts_backend/src/setPrototypeOf.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/TermuxWizard_backup/src/banani_export.sh",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/TermuxWizard_backup/src/banani_clipboard.sh",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/GetPrototypeFromConstructor.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/OrdinaryGetPrototypeOf.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/Iterator.prototype.flatMap.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/Iterator.prototype.drop.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/Iterator.prototype.filter.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/SetterThatIgnoresPrototypeProperties.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/Iterator.prototype.forEach.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/Iterator.prototype.some.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/Object.getPrototypeOf.d.ts",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/Iterator.prototype.includes.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/Iterator.prototype.map.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/Reflect.setPrototypeOf.d.ts",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/Reflect.getPrototypeOf.d.ts",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/Reflect.getPrototypeOf.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/Object.getPrototypeOf.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/Iterator.prototype.find.js",
+    "/data/data/com.termux/files/home/consolidation_backup_20260409_223838/storage/emulated/0/c25/src/Iterator.prototype.take.js"] };
+
+const SECTIONS = {
+  modules: { label: "27 Modules", data: MODULES.map(m=>({name:m,status:"Active",desc:"Platform core unit"})) },
+  agents: { label: "25 Agents", data: AGENTS.map(a=>({name:a,status:"Online",desc:"Planetary execution node"})) },
+  assets: { label: "228 Assets", data: Object.entries(ASSETS).flatMap(([k,v])=>v.map(p=>({name:p.split('/').pop(),path:p,type:k})) }
+};
+let active = "modules";
+
+function render(){
+  document.getElementById('meta').innerHTML = `
+    <div class="stat"><strong>27</strong><span>Modules</span></div>
+    <div class="stat"><strong>25</strong><span>Agents</span></div>
+    <div class="stat"><strong>228</strong><span>Assets</span></div>
+    <div class="stat"><strong>8</strong><span>Repos Synced</span></div>
+  `;
+  document.getElementById('tabs').innerHTML = Object.keys(SECTIONS).map(k=>
+    `<button class="tab ${k===active?'active':''}" onclick="switchTab('${k}')">${SECTIONS[k].label}</button>`
+  ).join('');
+  const c = SECTIONS[active].data;
+  document.getElementById('content').innerHTML = c.slice(0,50).map(x=>{
+    const tag = active==="modules"?"MODULE":active==="agents"?"AGENT":x.type.toUpperCase();
+    const sub = active==="modules"?"Core infrastructure":active==="agents"?"Autonomous node":x.path||"";
+    return `<div class="card"><span class="tag">${tag}</span><h3>${x.name}</h3><p>${sub}</p></div>`;
+  }).join('');
+}
+function switchTab(t){ active=t; render(); }
+window.switchTab = switchTab;
+render();
+</script>
+</body>
+</html>
