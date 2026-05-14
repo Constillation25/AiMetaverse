@@ -1,0 +1,348 @@
+MIME-Version: 1.0
+Content-Type: multipart/related; type="text/html"; boundary="----=_Part_Constellation25_1778751922686"
+X-MimeOLE: Produced By Constellation25 MVP Builder
+
+------=_Part_Constellation25_1778751922686
+Content-Type: text/html
+Content-Location: index.html
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Constellation25 | Sovereign Platform</title>
+<style>
+:root{--bg:#0b0f19;--surface:#111827;--border:#1f2937;--text:#f3f4f6;--muted:#9ca3af;
+--c1:#38bdf8;--c2:#a78bfa;--c3:#34d399;--c4:#f472b6;--font:system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0;font-family:var(--font)}
+body{background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
+.app{max-width:1400px;margin:0 auto;padding:1.5rem}
+header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1.5rem}
+h1{font-size:1.6rem;background:linear-gradient(90deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.tab{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.5rem 1rem;border-radius:6px;cursor:pointer;transition:.2s}
+.tab:hover{border-color:var(--c1);color:var(--text)}.tab.active{background:var(--c1);color:var(--bg);border-color:var(--c1)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;transition:.2s;cursor:pointer;position:relative}
+.card:hover{border-color:var(--c1);transform:translateY(-2px)}
+.card h3{font-size:.95rem;color:var(--c1);margin-bottom:.5rem}
+.card p{font-size:.8rem;color:var(--muted);margin-bottom:.5rem}
+.tag{position:absolute;top:10px;right:10px;padding:2px 6px;background:rgba(56,189,248,0.15);color:var(--c1);border-radius:10px;font-size:.7rem;text-transform:uppercase}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
+.stat{background:var(--surface);border:1px solid var(--border);padding:.8rem;border-radius:8px}
+.stat strong{display:block;font-size:1.5rem;margin-bottom:.2rem}
+footer{text-align:center;padding:2rem 0;color:var(--muted);border-top:1px solid var(--border);margin-top:3rem;font-size:.8rem}
+@media(max-width:768px){header{flex-direction:column;align-items:flex-start;gap:1rem}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header><h1>CONSTELLATION25</h1><div id="status">● Platform Active</div></header>
+  <div class="meta" id="meta"></div>
+  <div class="tabs" id="tabs"></div>
+  <div class="grid" id="content"></div>
+  <footer>© 2026 Constellation25 • Sovereign Stack • Zero Gates • 27 Modules • 25 Agents</footer>
+</div>
+<script>
+// Browser-compatible version of platform.js
+// This exposes the platform module to the browser via window.platform
+
+const MODULES = [
+  "CoreKernel","NeuralRouter","AgentOrchestrator","DataLedger","AuthlessGateway",
+  "CommerceEngine","VideoProcessing","LegalCompliance","MetaverseCore","FileSync",
+  "GammaParser","NotebookExecutor","BananiValidator","PrototypeSandbox","UIRenderer",
+  "AssetMapper","NetworkMesh","CryptoWallet","APIGateway","TaskScheduler",
+  "Telemetry","CacheManager","StorageOptimizer","SecurityShield","DeploymentPipeline",
+  "DocumentationHub","EarthRouter"
+];
+
+const AGENTS = Array.from({length:25},(_,i)=>`C25-${String(i+1).padStart(2,'0')}`);
+
+const ASSETS = { 
+  html: [
+    "/data/data/com.termux/files/home/constellation25/data/fixed_html/Qwen Studio.html",
+    "/data/data/com.termux/files/home/constellation25/data/fixed_html/Qwen_Studio.html"
+  ],
+  gamma: [
+    "/data/data/com.termux/files/home/github-repos/C25-mono/bash/9304d2_gamma_agent.sh",
+    "/data/data/com.termux/files/home/github-repos/C25-mono/bash/6e859b_gamma.sh"
+  ],
+  notebook: [
+    "/data/data/com.termux/files/home/github-repos/constellation-25/C25_Empire.ipynb"
+  ],
+  banani: [
+    "/data/data/com.termux/files/home/github-repos/videocourts_backend/src/Object.getPrototypeOf.d.ts"
+  ]
+};
+
+const SECTIONS = {
+  modules: { label: "27 Modules", data: MODULES.map(m=>({name:m,status:"Active",desc:"Platform core unit"})) },
+  agents: { label: "25 Agents", data: AGENTS.map(a=>({name:a,status:"Online",desc:"Planetary execution node"})) },
+  assets: { label: `${Object.values(ASSETS).flat().length} Assets`, data: Object.entries(ASSETS).flatMap(([k,v])=>v.map(p=>({name:p.split('/').pop(),path:p,type:k}))) }
+};
+
+class PlatformState {
+  constructor() {
+    this.activeSection = "modules";
+    this.modules = MODULES;
+    this.agents = AGENTS;
+    this.assets = ASSETS;
+    this.sections = SECTIONS;
+  }
+
+  getActiveSection() {
+    return this.activeSection;
+  }
+
+  setActiveSection(section) {
+    if (!this.sections[section]) {
+      throw new Error(`Invalid section: ${section}`);
+    }
+    this.activeSection = section;
+    return this.activeSection;
+  }
+
+  getModuleCount() {
+    return this.modules.length;
+  }
+
+  getAgentCount() {
+    return this.agents.length;
+  }
+
+  getAssetCount() {
+    return Object.values(this.assets).flat().length;
+  }
+
+  getSectionData(sectionName) {
+    return this.sections[sectionName]?.data || [];
+  }
+
+  getModuleName(index) {
+    if (index < 0 || index >= this.modules.length) {
+      throw new Error(`Index out of range: ${index}`);
+    }
+    return this.modules[index];
+  }
+
+  getAgentName(index) {
+    if (index < 0 || index >= this.agents.length) {
+      throw new Error(`Index out of range: ${index}`);
+    }
+    return this.agents[index];
+  }
+
+  filterAssetsByType(type) {
+    return this.assets[type] || [];
+  }
+
+  getStats() {
+    return {
+      moduleCount: this.getModuleCount(),
+      agentCount: this.getAgentCount(),
+      assetCount: this.getAssetCount(),
+      reposSynced: 8
+    };
+  }
+}
+
+// Expose to browser global scope
+window.platform = { 
+  MODULES, 
+  AGENTS, 
+  ASSETS, 
+  SECTIONS, 
+  PlatformState 
+};
+
+</script>
+<script>
+// Import platform constants and state from backend module
+const { MODULES, AGENTS, ASSETS, SECTIONS, PlatformState } = window.platform || {};
+
+// Initialize platform state
+const state = new PlatformState();
+
+// Render metadata stats
+function renderMeta() {
+  const stats = state.getStats();
+  const meta = document.getElementById('meta');
+  meta.innerHTML = `
+    <div class="stat"><strong>${stats.moduleCount}</strong><span>Modules</span></div>
+    <div class="stat"><strong>${stats.agentCount}</strong><span>Agents</span></div>
+    <div class="stat"><strong>${stats.assetCount}</strong><span>Assets</span></div>
+    <div class="stat"><strong>${stats.reposSynced}</strong><span>Repos Synced</span></div>
+  `;
+}
+
+// Render navigation tabs
+function renderTabs() {
+  const tabs = document.getElementById('tabs');
+  const sectionKeys = Object.keys(SECTIONS);
+  tabs.innerHTML = sectionKeys.map(key => 
+    `<button class="tab ${state.getActiveSection() === key ? 'active' : ''}" data-section="${key}">${SECTIONS[key].label}</button>`
+  ).join('');
+  
+  // Add click handlers
+  tabs.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      state.setActiveSection(tab.dataset.section);
+      renderTabs();
+      renderContent();
+    });
+  });
+}
+
+// Render content grid
+function renderContent() {
+  const content = document.getElementById('content');
+  const section = state.getActiveSection();
+  const data = state.getSectionData(section);
+  
+  if (section === 'assets') {
+    content.innerHTML = data.map(item => `
+      <div class="card">
+        <span class="tag">${item.type}</span>
+        <h3>${item.name}</h3>
+        <p>${item.path}</p>
+      </div>
+    `).join('');
+  } else {
+    content.innerHTML = data.map(item => `
+      <div class="card">
+        <h3>${item.name}</h3>
+        <p>${item.desc}</p>
+        <p>Status: ${item.status}</p>
+      </div>
+    `).join('');
+  }
+}
+
+// Initialize app
+document.addEventListener('DOMContentLoaded', () => {
+  renderMeta();
+  renderTabs();
+  renderContent();
+});
+</script>
+</body>
+</html>
+
+------=_Part_Constellation25_1778751922686
+Content-Type: application/javascript
+Content-Location: platform.js
+Content-Transfer-Encoding: quoted-printable
+
+// Browser-compatible version of platform.js
+// This exposes the platform module to the browser via window.platform
+
+const MODULES = [
+  "CoreKernel","NeuralRouter","AgentOrchestrator","DataLedger","AuthlessGateway",
+  "CommerceEngine","VideoProcessing","LegalCompliance","MetaverseCore","FileSync",
+  "GammaParser","NotebookExecutor","BananiValidator","PrototypeSandbox","UIRenderer",
+  "AssetMapper","NetworkMesh","CryptoWallet","APIGateway","TaskScheduler",
+  "Telemetry","CacheManager","StorageOptimizer","SecurityShield","DeploymentPipeline",
+  "DocumentationHub","EarthRouter"
+];
+
+const AGENTS = Array.from({length:25},(_,i)=>`C25-${String(i+1).padStart(2,'0')}`);
+
+const ASSETS = { 
+  html: [
+    "/data/data/com.termux/files/home/constellation25/data/fixed_html/Qwen Studio.html",
+    "/data/data/com.termux/files/home/constellation25/data/fixed_html/Qwen_Studio.html"
+  ],
+  gamma: [
+    "/data/data/com.termux/files/home/github-repos/C25-mono/bash/9304d2_gamma_agent.sh",
+    "/data/data/com.termux/files/home/github-repos/C25-mono/bash/6e859b_gamma.sh"
+  ],
+  notebook: [
+    "/data/data/com.termux/files/home/github-repos/constellation-25/C25_Empire.ipynb"
+  ],
+  banani: [
+    "/data/data/com.termux/files/home/github-repos/videocourts_backend/src/Object.getPrototypeOf.d.ts"
+  ]
+};
+
+const SECTIONS = {
+  modules: { label: "27 Modules", data: MODULES.map(m=>({name:m,status:"Active",desc:"Platform core unit"})) },
+  agents: { label: "25 Agents", data: AGENTS.map(a=>({name:a,status:"Online",desc:"Planetary execution node"})) },
+  assets: { label: `${Object.values(ASSETS).flat().length} Assets`, data: Object.entries(ASSETS).flatMap(([k,v])=>v.map(p=>({name:p.split('/').pop(),path:p,type:k}))) }
+};
+
+class PlatformState {
+  constructor() {
+    this.activeSection = "modules";
+    this.modules = MODULES;
+    this.agents = AGENTS;
+    this.assets = ASSETS;
+    this.sections = SECTIONS;
+  }
+
+  getActiveSection() {
+    return this.activeSection;
+  }
+
+  setActiveSection(section) {
+    if (!this.sections[section]) {
+      throw new Error(`Invalid section: ${section}`);
+    }
+    this.activeSection = section;
+    return this.activeSection;
+  }
+
+  getModuleCount() {
+    return this.modules.length;
+  }
+
+  getAgentCount() {
+    return this.agents.length;
+  }
+
+  getAssetCount() {
+    return Object.values(this.assets).flat().length;
+  }
+
+  getSectionData(sectionName) {
+    return this.sections[sectionName]?.data || [];
+  }
+
+  getModuleName(index) {
+    if (index < 0 || index >= this.modules.length) {
+      throw new Error(`Index out of range: ${index}`);
+    }
+    return this.modules[index];
+  }
+
+  getAgentName(index) {
+    if (index < 0 || index >= this.agents.length) {
+      throw new Error(`Index out of range: ${index}`);
+    }
+    return this.agents[index];
+  }
+
+  filterAssetsByType(type) {
+    return this.assets[type] || [];
+  }
+
+  getStats() {
+    return {
+      moduleCount: this.getModuleCount(),
+      agentCount: this.getAgentCount(),
+      assetCount: this.getAssetCount(),
+      reposSynced: 8
+    };
+  }
+}
+
+// Expose to browser global scope
+window.platform = { 
+  MODULES, 
+  AGENTS, 
+  ASSETS, 
+  SECTIONS, 
+  PlatformState 
+};
+
+------=_Part_Constellation25_1778751922686--

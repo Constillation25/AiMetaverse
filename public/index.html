@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Constellation25 | Sovereign Platform</title>
+<style>
+:root{--bg:#0b0f19;--surface:#111827;--border:#1f2937;--text:#f3f4f6;--muted:#9ca3af;
+--c1:#38bdf8;--c2:#a78bfa;--c3:#34d399;--c4:#f472b6;--font:system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0;font-family:var(--font)}
+body{background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
+.app{max-width:1400px;margin:0 auto;padding:1.5rem}
+header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:1rem;margin-bottom:1.5rem}
+h1{font-size:1.6rem;background:linear-gradient(90deg,var(--c1),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.tab{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.5rem 1rem;border-radius:6px;cursor:pointer;transition:.2s}
+.tab:hover{border-color:var(--c1);color:var(--text)}.tab.active{background:var(--c1);color:var(--bg);border-color:var(--c1)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;transition:.2s;cursor:pointer;position:relative}
+.card:hover{border-color:var(--c1);transform:translateY(-2px)}
+.card h3{font-size:.95rem;color:var(--c1);margin-bottom:.5rem}
+.card p{font-size:.8rem;color:var(--muted);margin-bottom:.5rem}
+.tag{position:absolute;top:10px;right:10px;padding:2px 6px;background:rgba(56,189,248,0.15);color:var(--c1);border-radius:10px;font-size:.7rem;text-transform:uppercase}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
+.stat{background:var(--surface);border:1px solid var(--border);padding:.8rem;border-radius:8px}
+.stat strong{display:block;font-size:1.5rem;margin-bottom:.2rem}
+footer{text-align:center;padding:2rem 0;color:var(--muted);border-top:1px solid var(--border);margin-top:3rem;font-size:.8rem}
+@media(max-width:768px){header{flex-direction:column;align-items:flex-start;gap:1rem}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header><h1>CONSTELLATION25</h1><div id="status">● Connecting...</div></header>
+  <div class="meta" id="meta"></div>
+  <div class="tabs" id="tabs"></div>
+  <div class="grid" id="content"></div>
+  <footer>© 2026 Constellation25 • Sovereign Stack • Zero Gates • 27 Modules • 25 Agents</footer>
+</div>
+<script>
+// End-to-end persistent platform - fetches live data from backend API
+let platformData = null;
+let activeSection = 'modules';
+
+// Fetch live data from backend
+async function fetchPlatformData() {
+  try {
+    const [stats, modules, agents, sections] = await Promise.all([
+      fetch('/api/stats').then(r => r.json()),
+      fetch('/api/modules').then(r => r.json()),
+      fetch('/api/agents').then(r => r.json()),
+      fetch('/api/sections').then(r => r.json())
+    ]);
+    
+    platformData = { stats, modules, agents, sections };
+    document.getElementById('status').innerHTML = '● Platform Active';
+    document.getElementById('status').style.color = '#34d399';
+    return true;
+  } catch (error) {
+    console.error('Failed to fetch platform data:', error);
+    document.getElementById('status').innerHTML = '● Connection Lost';
+    document.getElementById('status').style.color = '#f472b6';
+    return false;
+  }
+}
+
+// Render metadata stats
+function renderMeta() {
+  if (!platformData) return;
+  const { stats } = platformData;
+  const meta = document.getElementById('meta');
+  meta.innerHTML = `
+    <div class="stat"><strong>${stats.moduleCount}</strong><span>Modules</span></div>
+    <div class="stat"><strong>${stats.agentCount}</strong><span>Agents</span></div>
+    <div class="stat"><strong>${stats.assetCount}</strong><span>Assets</span></div>
+    <div class="stat"><strong>${stats.reposSynced}</strong><span>Repos Synced</span></div>
+  `;
+}
+
+// Render navigation tabs
+function renderTabs() {
+  if (!platformData) return;
+  const { sections } = platformData;
+  const tabs = document.getElementById('tabs');
+  const sectionKeys = Object.keys(sections);
+  tabs.innerHTML = sectionKeys.map(key => 
+    `<button class="tab ${activeSection === key ? 'active' : ''}" data-section="${key}">${sections[key].label}</button>`
+  ).join('');
+  
+  tabs.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      activeSection = tab.dataset.section;
+      renderTabs();
+      renderContent();
+    });
+  });
+}
+
+// Render content grid
+function renderContent() {
+  if (!platformData) return;
+  const { sections } = platformData;
+  const content = document.getElementById('content');
+  const data = sections[activeSection]?.data || [];
+  
+  if (activeSection === 'assets') {
+    content.innerHTML = data.map(item => `
+      <div class="card">
+        <span class="tag">${item.type}</span>
+        <h3>${item.name}</h3>
+        <p>${item.path}</p>
+      </div>
+    `).join('');
+  } else {
+    content.innerHTML = data.map(item => `
+      <div class="card">
+        <h3>${item.name}</h3>
+        <p>${item.desc}</p>
+        <p>Status: ${item.status}</p>
+      </div>
+    `).join('');
+  }
+}
+
+// Initialize app with live data
+async function init() {
+  const connected = await fetchPlatformData();
+  if (connected) {
+    renderMeta();
+    renderTabs();
+    renderContent();
+    
+    // Auto-refresh every 30 seconds for persistence
+    setInterval(async () => {
+      await fetchPlatformData();
+      renderMeta();
+      renderContent();
+    }, 30000);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
