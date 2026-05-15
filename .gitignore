@@ -1,38 +1,3 @@
 ```
-# Dependencies
 node_modules/
-
-# Build artifacts
-build/
-dist/
-
-# Environment
-.env
-.env.local
-*.env.*
-
-# Editor/IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*.tmp
-
-# Logs
-*.log
-
-# Python cache (if any Python files present)
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Test coverage
-coverage/
-htmlcov/
-.coverage
-
-# OS generated files
-.DS_Store
-Thumbs.db
 ```
