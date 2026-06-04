@@ -1,0 +1,121 @@
+{
+  "generated_at": "2026-06-04T22:16:21.841953",
+  "root_directory": "/workspace",
+  "statistics": {
+    "total_files": 7,
+    "total_dirs": 3,
+    "total_size": 21896,
+    "by_extension": {
+      ".json": 2,
+      "": 1,
+      ".py": 1,
+      ".sh": 1,
+      ".yml": 2
+    },
+    "by_directory": {
+      ".": {
+        "files": [
+          "vercel.json",
+          ".gitignore",
+          "crawl-mapper.py",
+          "package.json",
+          "sync-automation.sh"
+        ],
+        "subdirs": []
+      },
+      ".github": {
+        "files": [],
+        "subdirs": []
+      },
+      ".github/workflows": {
+        "files": [
+          ".github/workflows/faceprintpay-deploy.yml",
+          ".github/workflows/c25-agent-deploy.yml"
+        ],
+        "subdirs": []
+      }
+    }
+  },
+  "files": {
+    "vercel.json": {
+      "path": "vercel.json",
+      "size": 251,
+      "modified": "2026-06-04T22:04:07.360960",
+      "created": "2026-06-04T22:04:07.360960",
+      "md5": "9b0f15c6d785b6767782e5a17e74b4d7",
+      "extension": ".json",
+      "is_binary": false
+    },
+    ".gitignore": {
+      "path": ".gitignore",
+      "size": 608,
+      "modified": "2026-06-04T22:10:50.540342",
+      "created": "2026-06-04T22:10:50.540342",
+      "md5": "7dbb3b1bf7ed6f99689a52e1857376ed",
+      "extension": "",
+      "is_binary": false
+    },
+    "crawl-mapper.py": {
+      "path": "crawl-mapper.py",
+      "size": 8651,
+      "modified": "2026-06-04T22:16:19.740094",
+      "created": "2026-06-04T22:16:21.740311",
+      "md5": "01dad7d7c4d855984f5ec4fc6a618547",
+      "extension": ".py",
+      "is_binary": false
+    },
+    "package.json": {
+      "path": "package.json",
+      "size": 283,
+      "modified": "2026-06-04T22:04:07.360960",
+      "created": "2026-06-04T22:04:07.360960",
+      "md5": "e1ec4a3b3a24c206d66c4e822b16f715",
+      "extension": ".json",
+      "is_binary": false
+    },
+    "sync-automation.sh": {
+      "path": "sync-automation.sh",
+      "size": 8446,
+      "modified": "2026-06-04T22:15:38.136575",
+      "created": "2026-06-04T22:15:40.879874",
+      "md5": "1e721210fd31475bdaa4ed083321f65c",
+      "extension": ".sh",
+      "is_binary": false
+    },
+    ".github/workflows/faceprintpay-deploy.yml": {
+      "path": ".github/workflows/faceprintpay-deploy.yml",
+      "size": 1562,
+      "modified": "2026-06-04T22:07:23.539870",
+      "created": "2026-06-04T22:07:23.539870",
+      "md5": "408081b13bf705b3df1b11ca9a963e9d",
+      "extension": ".yml",
+      "is_binary": false
+    },
+    ".github/workflows/c25-agent-deploy.yml": {
+      "path": ".github/workflows/c25-agent-deploy.yml",
+      "size": 2095,
+      "modified": "2026-06-04T22:04:51.723388",
+      "created": "2026-06-04T22:04:51.723388",
+      "md5": "d9159c69ebb6f3e1f69bbc9c2dd61219",
+      "extension": ".yml",
+      "is_binary": false
+    }
+  },
+  "analysis": {
+    "workflow_files": [
+      ".github/workflows/faceprintpay-deploy.yml",
+      ".github/workflows/c25-agent-deploy.yml"
+    ],
+    "config_files": [
+      "vercel.json",
+      "package.json"
+    ],
+    "source_files": [
+      "crawl-mapper.py"
+    ],
+    "documentation": [],
+    "scripts": [
+      "sync-automation.sh"
+    ]
+  }
+}

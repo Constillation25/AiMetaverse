@@ -9,22 +9,30 @@ env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
   C25_AGENT: ${{ github.event.inputs.agent_name || 'auto' }}
+  NODE_OPTIONS: "--max-old-space-size=4096"
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with: { submodules: false, fetch-depth: 1 }
       - name: Setup Node
         uses: actions/setup-node@v4
         with: { node-version: '20', cache: 'npm' }
+      - name: Cache Vercel
+        uses: actions/cache@v4
+        with:
+          path: ~/.vercel
+          key: ${{ runner.os }}-vercel-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-vercel-
       - name: Install Vercel CLI
         run: npm i -g vercel@latest
       - name: Pre-deploy
         run: |
           echo "🤖 Agent: $C25_AGENT"
-          npm ci --silent 2>/dev/null || npm install --silent
+          npm ci --prefer-offline --silent 2>/dev/null || npm install --silent
           npm run build --if-present 2>/dev/null || true
       - name: Deploy
         run: |
