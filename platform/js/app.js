@@ -47,6 +47,9 @@ function renderContent() {
     } else if (activeTab === 'agents') {
       tag = 'AGENT';
       subtitle = 'Autonomous node';
+    } else if (activeTab === 'botability') {
+      tag = 'AI TOOL';
+      subtitle = item.desc || item.status;
     } else {
       tag = item.type.toUpperCase();
       subtitle = item.path || '';
