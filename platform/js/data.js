@@ -58,6 +58,26 @@ const SECTIONS = {
     data: Object.entries(ASSETS).flatMap(([k, v]) =>
       v.map(p => ({ name: p.split('/').pop(), path: p, type: k }))
     )
+  },
+  botability: {
+    label: "BOTablity",
+    data: [
+      { name: "AI Tools for Content Creation", status: "Available", desc: "Jarvis, Lyrical, Hotpot AI, Descript, Grammarly" },
+      { name: "AI Tools for Students", status: "Available", desc: "Quizlet, Caktus AI, Wolfram Alpha, Duolingo, Brainly" },
+      { name: "AI Tools for Email Writing", status: "Available", desc: "Boomerang, Crystal, Copy.ai" },
+      { name: "AI Tools for Presentation", status: "Available", desc: "Beautiful.ai, Designs.AI, Presentations.AI, Tome AI" },
+      { name: "AI Tools for Designers", status: "Available", desc: "Canva, Adobe Firefly AI, Leonardo AI, Visual ChatGPT, Figma" },
+      { name: "AI Tools for Marketing", status: "Available", desc: "HubSpot, Factmata, Phrasee, Hootsuite, Marketo" },
+      { name: "AI Content Detectors", status: "Available", desc: "Truepic, AI Text Classifier, Deeptrace, Sensity, GPTZero" },
+      { name: "AI Tools for Business", status: "Available", desc: "Microsoft Azure AI, IBM Watson, Salesforce Einstein, AWS AI" },
+      { name: "AI Tools for Searching", status: "Available", desc: "You.com, IBM Watson Discovery, Diffbot, Neeva AI" },
+      { name: "AI Tools for Interior Designers", status: "Available", desc: "Planner 5D, Interior AI, Modsy, Morpholio Board, Reimagine Home AI" },
+      { name: "AI Tools for Video Editing", status: "Available", desc: "Synthesia, Doodly, InVideo, Lumen5" },
+      { name: "AI Tools for Writing", status: "Available", desc: "Google Bard AI, Notion AI, Chai, NovelAI, Jenni AI, Microsoft 365 Copilot" },
+      { name: "AI Tools for Image Generation", status: "Available", desc: "MyHeritage AI Time Machine, Lensa AI, Stable Diffusion, DALL-E 2, Midjourney" },
+      { name: "AI Search Engines", status: "Available", desc: "Consensus AI, Google Bard, Komo AI, You.com, Bing AI" },
+      { name: "Workflow Solutions", status: "Active", desc: "Speed & Security, Flexibility & Scalability, Better Collaboration" }
+    ]
   }
 };
 
