@@ -1,4 +1,4 @@
 ```
-# HTML platform files
-platform/*.html
+# Documentation
+*.md
 ```

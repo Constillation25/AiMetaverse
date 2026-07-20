@@ -1,0 +1,664 @@
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "@chrome-devtools/mcp"],
+      "description": "MCP server for Chrome DevTools"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp"],
+      "description": "Automate web browsers using accessibility trees"
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@github/mcp"],
+      "description": "Connect AI assistants to GitHub"
+    },
+    "serena": {
+      "command": "npx",
+      "args": ["-y", "@oraios/serena-mcp"],
+      "description": "Semantic code retrieval & editing tools"
+    },
+    "unity": {
+      "command": "python",
+      "args": ["-m", "unity_mcp_server"],
+      "description": "Control the Unity Editor from MCP clients"
+    },
+    "firecrawl": {
+      "command": "npx",
+      "args": ["-y", "firecrawl-mcp"],
+      "description": "Extract web data with Firecrawl"
+    },
+    "desktop-commander": {
+      "command": "npx",
+      "args": ["-y", "@wonderwhy-er/desktop-commander-mcp"],
+      "description": "Terminal commands, file operations, and process management"
+    },
+    "notion": {
+      "command": "npx",
+      "args": ["-y", "@makenotion/notion-mcp"],
+      "description": "Official MCP server for Notion API"
+    },
+    "azure-mcp": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/azure-mcp"],
+      "description": "All Azure MCP tools"
+    },
+    "microsoft-fabric": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/fabric-mcp"],
+      "description": "MCP tools for interacting with Microsoft Fabric"
+    },
+    "dbhub": {
+      "command": "npx",
+      "args": ["-y", "@bytebase/dbhub-mcp"],
+      "description": "Database MCP Server for PostgreSQL, MySQL, SQL Server, SQLite, MariaDB"
+    },
+    "supabase": {
+      "command": "npx",
+      "args": ["-y", "@supabase/mcp"],
+      "description": "MCP server for interacting with the Supabase platform"
+    },
+    "brightdata": {
+      "command": "npx",
+      "args": ["-y", "@brightdata/brightdata-mcp"],
+      "description": "Bright Data's Web MCP server"
+    },
+    "tavily": {
+      "command": "npx",
+      "args": ["-y", "@tavily/tavily-mcp"],
+      "description": "MCP server for advanced web search using Tavily"
+    },
+    "azure-devops": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/azure-devops-mcp"],
+      "description": "Interact with Azure DevOps services"
+    },
+    "microsoft-learn": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/learn-mcp"],
+      "description": "Microsoft's official documentation"
+    },
+    "figma": {
+      "command": "npx",
+      "args": ["-y", "@figma/figma-mcp"],
+      "description": "The Figma MCP server"
+    },
+    "apify": {
+      "command": "npx",
+      "args": ["-y", "@apify/apify-mcp"],
+      "description": "Extract data from websites with Apify"
+    },
+    "stripe": {
+      "command": "npx",
+      "args": ["-y", "@stripe/stripe-mcp"],
+      "description": "MCP server integrating with Stripe"
+    },
+    "nuget": {
+      "command": "npx",
+      "args": ["-y", "@nuget/nuget-mcp"],
+      "description": "A Model Context Protocol server for NuGet"
+    },
+    "terraform": {
+      "command": "npx",
+      "args": ["-y", "@hashicorp/terraform-mcp"],
+      "description": "Generate Terraform and automate workflows"
+    },
+    "mongodb": {
+      "command": "npx",
+      "args": ["-y", "@mongodb-js/mongodb-mcp"],
+      "description": "MongoDB Model Context Protocol Server"
+    },
+    "searxng": {
+      "command": "npx",
+      "args": ["-y", "searxng-mcp"],
+      "description": "MCP server for SearXNG"
+    },
+    "nuxt": {
+      "command": "npx",
+      "args": ["-y", "@antfu/nuxt-mcp"],
+      "description": "MCP server helping models understand your Vite/Nuxt app"
+    },
+    "stackql": {
+      "command": "npx",
+      "args": ["-y", "@stackql/stackql-mcp"],
+      "description": "SQL-native query and provisioning engine"
+    },
+    "atlassian-rovо": {
+      "command": "npx",
+      "args": ["-y", "@atlassian/rovо-mcp"],
+      "description": "Connect to Atlassian Jira, Confluence, and Compass"
+    },
+    "vercel-next-dev": {
+      "command": "npx",
+      "args": ["-y", "@vercel/next-dev-mcp"],
+      "description": "Next.js development tools MCP server"
+    },
+    "sentry": {
+      "command": "npx",
+      "args": ["-y", "@getsentry/sentry-mcp"],
+      "description": "MCP server for Sentry"
+    },
+    "elasticsearch": {
+      "command": "npx",
+      "args": ["-y", "@elastic/elasticsearch-mcp"],
+      "description": "MCP server for connecting to Elasticsearch"
+    },
+    "neon": {
+      "command": "npx",
+      "args": ["-y", "@neondatabase/neon-mcp"],
+      "description": "MCP server for interacting with Neon"
+    },
+    "sonarqube": {
+      "command": "npx",
+      "args": ["-y", "@sonarsource/sonarqube-mcp"],
+      "description": "Analyze code quality with SonarQube"
+    },
+    "chroma": {
+      "command": "npx",
+      "args": ["-y", "@chroma-core/chroma-mcp"],
+      "description": "Data retrieval powered by Chroma"
+    },
+    "todoist": {
+      "command": "npx",
+      "args": ["-y", "@doist/todoist-mcp"],
+      "description": "Tools to connect AI agents to Todoist"
+    },
+    "monday": {
+      "command": "npx",
+      "args": ["-y", "@mondaycom/monday-mcp"],
+      "description": "MCP server for monday.com integration"
+    },
+    "mapbox": {
+      "command": "npx",
+      "args": ["-y", "@mapbox/mapbox-mcp"],
+      "description": "Geospatial intelligence with Mapbox APIs"
+    },
+    "zapier": {
+      "command": "npx",
+      "args": ["-y", "@zapier/zapier-mcp"],
+      "description": "Zapier MCP with access to 8000+ apps"
+    },
+    "imagesorcery": {
+      "command": "npx",
+      "args": ["-y", "@sunriseapps/imagesorcery-mcp"],
+      "description": "Local image processing with computer vision"
+    },
+    "pmb-ai": {
+      "command": "npx",
+      "args": ["-y", "@oleksiijko/pmb-ai-mcp"],
+      "description": "Local-first persistent memory for AI coding agents"
+    },
+    "svelte": {
+      "command": "npx",
+      "args": ["-y", "@sveltejs/svelte-mcp"],
+      "description": "Official Svelte MCP server"
+    },
+    "postman": {
+      "command": "npx",
+      "args": ["-y", "@postmanlabs/postman-mcp"],
+      "description": "Basic MCP server for Postman API"
+    },
+    "huggingface": {
+      "command": "npx",
+      "args": ["-y", "@huggingface/huggingface-mcp"],
+      "description": "Access Hugging Face models, datasets, Spaces"
+    },
+    "azure-ai-foundry": {
+      "command": "npx",
+      "args": ["-y", "@microsoft-foundry/azure-ai-foundry-mcp"],
+      "description": "Experimental MCP server for Azure AI Foundry"
+    },
+    "crowdstrike": {
+      "command": "npx",
+      "args": ["-y", "@crowdstrike/falcon-mcp"],
+      "description": "Connects AI agents with CrowdStrike Falcon"
+    },
+    "awesome-copilot": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/awesome-copilot-mcp"],
+      "description": "Stores Copilot customizations"
+    },
+    "pgedge": {
+      "command": "npx",
+      "args": ["-y", "@pgedge/pgedge-mcp"],
+      "description": "Enterprise PostgreSQL MCP server"
+    },
+    "glean": {
+      "command": "npx",
+      "args": ["-y", "@gleanwork/glean-mcp"],
+      "description": "Glean Enterprise Knowledge MCP Server"
+    },
+    "logfire": {
+      "command": "npx",
+      "args": ["-y", "@pydantic/logfire-mcp"],
+      "description": "Access OpenTelemetry traces and metrics"
+    },
+    "serpapi": {
+      "command": "npx",
+      "args": ["-y", "@serpapi/serpapi-mcp"],
+      "description": "Official SerpApi MCP server"
+    },
+    "sap-fiori": {
+      "command": "npx",
+      "args": ["-y", "@sap/sap-fiori-mcp"],
+      "description": "SAP Fiori MCP server"
+    },
+    "azure-kubernetes": {
+      "command": "npx",
+      "args": ["-y", "@azure/aks-mcp"],
+      "description": "Interact with Azure Kubernetes Service"
+    },
+    "webflow": {
+      "command": "npx",
+      "args": ["-y", "@webflow/webflow-mcp"],
+      "description": "AI-powered design and management for Webflow"
+    },
+    "dynatrace": {
+      "command": "npx",
+      "args": ["-y", "@dynatrace/dynatrace-mcp"],
+      "description": "Access Dynatrace observability data"
+    },
+    "miro": {
+      "command": "npx",
+      "args": ["-y", "@miroapp/miro-mcp"],
+      "description": "Official Miro MCP server"
+    },
+    "fabric-realtime": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/fabric-realtime-mcp"],
+      "description": "Query Eventhouse/ADX with KQL"
+    },
+    "hostinger": {
+      "command": "npx",
+      "args": ["-y", "@hostinger/hostinger-mcp"],
+      "description": "MCP server for Hostinger API"
+    },
+    "sendmux": {
+      "command": "npx",
+      "args": ["-y", "@sendmux/sendmux-mcp"],
+      "description": "Email Inbox API + Sending by Sendmux"
+    },
+    "cap-js": {
+      "command": "npx",
+      "args": ["-y", "@cap-js/cap-mcp"],
+      "description": "MCP server for CAP applications"
+    },
+    "octopus-deploy": {
+      "command": "npx",
+      "args": ["-y", "@octopusdeploy/octopus-mcp"],
+      "description": "Deliver software to Kubernetes, multi-cloud"
+    },
+    "clarity": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/clarity-mcp"],
+      "description": "Fetch Clarity analytics"
+    },
+    "ui5": {
+      "command": "npx",
+      "args": ["-y", "@ui5/ui5-mcp"],
+      "description": "MCP server for SAPUI5/OpenUI5 development"
+    },
+    "scrapegraph": {
+      "command": "npx",
+      "args": ["-y", "@scrapegraph/scrapegraph-mcp"],
+      "description": "AI-powered web scraping via ScrapeGraph API"
+    },
+    "arm": {
+      "command": "npx",
+      "args": ["-y", "@arm/arm-mcp"],
+      "description": "Official Arm MCP server"
+    },
+    "deepwiki": {
+      "command": "npx",
+      "args": ["-y", "@cognitionai/deepwiki-mcp"],
+      "description": "Devin-generated docs for any public repo"
+    },
+    "pagerduty": {
+      "command": "npx",
+      "args": ["-y", "@pagerduty/pagerduty-mcp"],
+      "description": "PagerDuty's official MCP server"
+    },
+    "sonatype": {
+      "command": "npx",
+      "args": ["-y", "@sonatype/sonatype-mcp"],
+      "description": "Sonatype component intelligence"
+    },
+    "hitkeep": {
+      "command": "npx",
+      "args": ["-y", "@pascalebeier/hitkeep-mcp"],
+      "description": "Read-only MCP server for HitKeep analytics"
+    },
+    "codacy": {
+      "command": "npx",
+      "args": ["-y", "@codacy/codacy-mcp"],
+      "description": "MCP Server for the Codacy API"
+    },
+    "mapbox-devkit": {
+      "command": "npx",
+      "args": ["-y", "@mapbox/mapbox-devkit-mcp"],
+      "description": "Mapbox developer APIs and documentation"
+    },
+    "snyk": {
+      "command": "npx",
+      "args": ["-y", "@snyk/snyk-mcp"],
+      "description": "Find and fix security issues with Snyk"
+    },
+    "amplitude": {
+      "command": "npx",
+      "args": ["-y", "@amplitude/amplitude-mcp"],
+      "description": "Search and access Amplitude data"
+    },
+    "microsoft-enterprise": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/microsoft-enterprise-mcp"],
+      "description": "Query Microsoft Entra data"
+    },
+    "zscaler": {
+      "command": "npx",
+      "args": ["-y", "@zscaler/zscaler-mcp"],
+      "description": "Manage Zscaler Zero Trust Exchange"
+    },
+    "smartbear": {
+      "command": "npx",
+      "args": ["-y", "@smartbear/smartbear-mcp"],
+      "description": "AI access to SmartBear tools"
+    },
+    "contextstream": {
+      "command": "npx",
+      "args": ["-y", "@contextstream/contextstream-mcp"],
+      "description": "Code context, memory, search, and AI tools"
+    },
+    "prompts-chat": {
+      "command": "npx",
+      "args": ["-y", "@f/prompts-chat-mcp"],
+      "description": "Search and retrieve AI prompts"
+    },
+    "pubnub": {
+      "command": "npx",
+      "args": ["-y", "@pubnub/pubnub-mcp"],
+      "description": "PubNub MCP Server for Cursor and Claude"
+    },
+    "justcall": {
+      "command": "npx",
+      "args": ["-y", "@saaslabsco/justcall-mcp"],
+      "description": "Make voice calls and send SMS via JustCall"
+    },
+    "rigour": {
+      "command": "npx",
+      "args": ["-y", "@rigour-labs/rigour-mcp"],
+      "description": "Quality gates for AI agents"
+    },
+    "dynatrace-managed": {
+      "command": "npx",
+      "args": ["-y", "@dynatrace/dynatrace-managed-mcp"],
+      "description": "Dynatrace Managed MCP server"
+    },
+    "goreleaser": {
+      "command": "npx",
+      "args": ["-y", "@goreleaser/goreleaser-mcp"],
+      "description": "GoReleaser MCP server"
+    },
+    "launchdarkly": {
+      "command": "npx",
+      "args": ["-y", "@launchdarkly/launchdarkly-mcp"],
+      "description": "Feature flag management and experimentation"
+    },
+    "nslookup": {
+      "command": "npx",
+      "args": ["-y", "@nslookup-io/nslookup-mcp"],
+      "description": "DNS lookups, health reports, SSL certs"
+    },
+    "stackoverflow": {
+      "command": "npx",
+      "args": ["-y", "@stackexchange/stackoverflow-mcp"],
+      "description": "Access Stack Overflow Q&A"
+    },
+    "topos": {
+      "command": "npx",
+      "args": ["-y", "@krv-labs/topos-mcp"],
+      "description": "Structural code-quality tools"
+    },
+    "ui5-webcomponents": {
+      "command": "npx",
+      "args": ["-y", "@ui5/ui5-webcomponents-mcp"],
+      "description": "UI5 Web Components development assistance"
+    },
+    "claude-faf": {
+      "command": "npx",
+      "args": ["-y", "@wolfe-jam/claude-faf-mcp"],
+      "description": "Persistent project context for Claude"
+    },
+    "wix": {
+      "command": "npx",
+      "args": ["-y", "@wix/wix-mcp"],
+      "description": "MCP server for Wix AI tools"
+    },
+    "port": {
+      "command": "npx",
+      "args": ["-y", "@port-labs/port-mcp"],
+      "description": "Port.io mcp server"
+    },
+    "sourcegraph": {
+      "command": "npx",
+      "args": ["-y", "@sourcegraph-community/sourcegraph-mcp"],
+      "description": "Sourcegraph code search"
+    },
+    "axiom": {
+      "command": "npx",
+      "args": ["-y", "@axiomhq/axiom-mcp"],
+      "description": "List datasets, schemas, run APL queries"
+    },
+    "dev-box": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/dev-box-mcp"],
+      "description": "Developer-focused operations for Dev Boxes"
+    },
+    "longbridge": {
+      "command": "npx",
+      "args": ["-y", "@longbridge/longbridge-mcp"],
+      "description": "US/HK markets quotes and trading"
+    },
+    "vercel": {
+      "command": "npx",
+      "args": ["-y", "@vercel/vercel-mcp"],
+      "description": "An MCP server for Vercel"
+    },
+    "control-plane": {
+      "command": "npx",
+      "args": ["-y", "@controlplane-com/control-plane-mcp"],
+      "description": "Deploy workloads across clouds"
+    },
+    "jfrog": {
+      "command": "npx",
+      "args": ["-y", "@jfrog/jfrog-mcp"],
+      "description": "JFrog development and artifact management"
+    },
+    "stackhawk": {
+      "command": "npx",
+      "args": ["-y", "@stackhawk/stackhawk-mcp"],
+      "description": "StackHawk security scanning platform"
+    },
+    "intercom": {
+      "command": "npx",
+      "args": ["-y", "@intercom/intercom-mcp"],
+      "description": "Access Intercom data"
+    },
+    "anima": {
+      "command": "npx",
+      "args": ["-y", "@animaapp/anima-mcp"],
+      "description": "Connect AI agents to Anima Playground"
+    },
+    "box": {
+      "command": "npx",
+      "args": ["-y", "@box/box-mcp"],
+      "description": "Connect AI agents to Box content"
+    },
+    "optionsahoy": {
+      "command": "npx",
+      "args": ["-y", "@alvisooculus/optionsahoy-mcp"],
+      "description": "Equity comp tax/trade optimizer"
+    },
+    "memo": {
+      "command": "npx",
+      "args": ["-y", "@jagoff/memo-mcp"],
+      "description": "Memory for AI agents"
+    },
+    "qwarranto": {
+      "command": "npx",
+      "args": ["-y", "@qwarranto/qwarranto-mcp"],
+      "description": "Agricultural AI"
+    },
+    "flatten-mcp": {
+      "command": "npx",
+      "args": ["-y", "@shayashav/flatten-mcp"],
+      "description": "Flatten Claude Code sessions"
+    },
+    "faf-context": {
+      "command": "npx",
+      "args": ["-y", "@wolfe-jam/faf-context-mcp"],
+      "description": "IDE Edition persistent project context"
+    },
+    "holomodular": {
+      "command": "npx",
+      "args": ["-y", "@holomodular/servicebricks-mcp"],
+      "description": "Generate ServiceBricks C# microservice"
+    },
+    "wopee": {
+      "command": "npx",
+      "args": ["-y", "@wopee-io/wopee-mcp"],
+      "description": "AI testing agents for web apps"
+    },
+    "livecheck": {
+      "command": "npx",
+      "args": ["-y", "@qualityclouds/livecheck-mcp"],
+      "description": "Secure MCP runtime for code scanning"
+    },
+    "shipstatic": {
+      "command": "npx",
+      "args": ["-y", "@shipstatic/shipstatic-mcp"],
+      "description": "Deploy websites from AI agents"
+    },
+    "dc-hub": {
+      "command": "npx",
+      "args": ["-y", "@azmartone67/dc-hub-mcp"],
+      "description": "Data center and power intelligence"
+    },
+    "avalara-tax-content": {
+      "command": "npx",
+      "args": ["-y", "@avadev/avalara-tax-content-mcp"],
+      "description": "Avalara Tax Content"
+    },
+    "avalara-avatax": {
+      "command": "npx",
+      "args": ["-y", "@avadev/avalara-avatax-mcp"],
+      "description": "Avalara AvaTax API"
+    },
+    "avalara-registrations": {
+      "command": "npx",
+      "args": ["-y", "@avadev/avalara-registrations-mcp"],
+      "description": "Tax Registrations and Business Licenses"
+    },
+    "avalara-classification": {
+      "command": "npx",
+      "args": ["-y", "@avadev/avalara-classification-mcp"],
+      "description": "HS codes and tariff compliance"
+    },
+    "avalara-cross-border": {
+      "command": "npx",
+      "args": ["-y", "@avadev/avalara-cross-border-mcp"],
+      "description": "Cross-border duty-rate lookups"
+    },
+    "avalara-developer-docs": {
+      "command": "npx",
+      "args": ["-y", "@avadev/avalara-developer-docs-mcp"],
+      "description": "Avalara developer documentation"
+    },
+    "avalara-returns": {
+      "command": "npx",
+      "args": ["-y", "@avadev/avalara-returns-mcp"],
+      "description": "Avalara Global Returns API"
+    },
+    "memxus": {
+      "command": "npx",
+      "args": ["-y", "@memxus/memxus-mcp"],
+      "description": "Memxus MCP server"
+    },
+    "lovable": {
+      "command": "npx",
+      "args": ["-y", "@lovablelabs/lovable-mcp"],
+      "description": "Official MCP server for Lovable"
+    },
+    "keenable": {
+      "command": "npx",
+      "args": ["-y", "@keenableai/keenable-mcp"],
+      "description": "Live web search and markdown fetch"
+    },
+    "guru": {
+      "command": "npx",
+      "args": ["-y", "@guruhq/guru-mcp"],
+      "description": "Guru knowledge base MCP Server"
+    },
+    "sentinel": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/sentinel-mcp"],
+      "description": "Microsoft Sentinel Data Exploration"
+    },
+    "oakallow": {
+      "command": "npx",
+      "args": ["-y", "@oakallow/oakallow-mcp"],
+      "description": "Runtime permission and approval layer"
+    },
+    "shipbook": {
+      "command": "npx",
+      "args": ["-y", "@shipbook/shipbook-mcp"],
+      "description": "Debug production issues with Shipbook"
+    },
+    "plori": {
+      "command": "npx",
+      "args": ["-y", "@plori-ai/plori-mcp"],
+      "description": "Create and drive plori cloud agents"
+    },
+    "lucid": {
+      "command": "npx",
+      "args": ["-y", "@lucidsoftware/lucid-mcp"],
+      "description": "Lucid connector for diagrams"
+    },
+    "blackduck": {
+      "command": "npx",
+      "args": ["-y", "@blackducksoftware/blackduck-mcp"],
+      "description": "Black Duck Security Scanner"
+    },
+    "mabl": {
+      "command": "npx",
+      "args": ["-y", "@mablhq/mabl-mcp"],
+      "description": "AI-powered test automation"
+    },
+    "alterlab": {
+      "command": "npx",
+      "args": ["-y", "@rapiercraft/alterlab-mcp"],
+      "description": "Web scraping MCP server"
+    },
+    "octoperf": {
+      "command": "npx",
+      "args": ["-y", "@octoperf/octoperf-mcp"],
+      "description": "OctoPerf load testing"
+    },
+    "opusclip": {
+      "command": "npx",
+      "args": ["-y", "@opus-pro/opusclip-mcp"],
+      "description": "Turn long videos into short clips"
+    },
+    "outlook-personal": {
+      "command": "npx",
+      "args": ["-y", "@salahawad/outlook-personal-mcp"],
+      "description": "Personal Outlook.com mailbox and calendar"
+    },
+    "hvtracker": {
+      "command": "npx",
+      "args": ["-y", "@yugantm/hvtracker-mcp"],
+      "description": "Pre-connect trust checks for AI agents"
+    }
+  }
+}

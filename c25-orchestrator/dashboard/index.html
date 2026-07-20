@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C25 Swarm Dashboard</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --surface: #111827;
+      --border: #1f2937;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --c1: #38bdf8;
+      --c2: #a78bfa;
+      --c3: #34d399;
+      --c4: #f472b6;
+      --font: system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      background: linear-gradient(90deg, var(--c1), var(--c2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    #status {
+      color: var(--c3);
+      font-weight: 600;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .tab {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .tab:hover {
+      border-color: var(--c1);
+      color: var(--text);
+    }
+
+    .tab.active {
+      background: var(--c1);
+      color: var(--bg);
+      border-color: var(--c1);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.2rem;
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--c1), var(--c2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: var(--c1);
+    }
+
+    .repo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .repo-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      transition: 0.2s;
+      position: relative;
+    }
+
+    .repo-card:hover {
+      border-color: var(--c1);
+      transform: translateY(-2px);
+    }
+
+    .repo-card h3 {
+      font-size: 1rem;
+      color: var(--c1);
+      margin-bottom: 0.5rem;
+    }
+
+    .repo-card p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-core { background: rgba(56, 189, 248, 0.15); color: var(--c1); }
+    .badge-app { background: rgba(52, 211, 153, 0.15); color: var(--c3); }
+    .badge-infra { background: rgba(167, 139, 250, 0.15); color: var(--c2); }
+    .badge-support { background: rgba(244, 114, 182, 0.15); color: var(--c4); }
+
+    .status-dot {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .status-active { background: var(--c3); }
+    .status-setup { background: var(--c4); }
+    .status-pending { background: var(--muted); }
+
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.8rem;
+      margin-bottom: 2rem;
+    }
+
+    .agent-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .agent-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--c1), var(--c2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--bg);
+    }
+
+    .agent-info h4 {
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .agent-info p {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .deployment-log {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      padding: 0.3rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .log-entry:last-child {
+      border-bottom: none;
+    }
+
+    .log-time {
+      color: var(--muted);
+      margin-right: 0.5rem;
+    }
+
+    .log-success { color: var(--c3); }
+    .log-error { color: var(--c4); }
+    .log-info { color: var(--c1); }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      margin-top: 3rem;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>🌟 C25 Swarm Dashboard</h1>
+      <div id="status">● All Systems Operational</div>
+    </header>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total Repositories</h3>
+        <div class="value">36</div>
+      </div>
+      <div class="stat-card">
+        <h3>Active Agents</h3>
+        <div class="value">25</div>
+      </div>
+      <div class="stat-card">
+        <h3>Deployments Today</h3>
+        <div class="value">12</div>
+      </div>
+      <div class="stat-card">
+        <h3>Success Rate</h3>
+        <div class="value">99.8%</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="repos">Repositories</button>
+      <button class="tab" data-tab="agents">Agents</button>
+      <button class="tab" data-tab="deployments">Deployments</button>
+    </div>
+
+    <section id="repos-section">
+      <h2 class="section-title">Core Repositories</h2>
+      <div class="repo-grid" id="core-repos"></div>
+
+      <h2 class="section-title">Application Layer</h2>
+      <div class="repo-grid" id="app-repos"></div>
+
+      <h2 class="section-title">Infrastructure</h2>
+      <div class="repo-grid" id="infra-repos"></div>
+    </section>
+
+    <section id="agents-section" style="display: none;">
+      <h2 class="section-title">The 25 Celestial Agents</h2>
+      <div class="agent-grid" id="agent-list"></div>
+    </section>
+
+    <section id="deployments-section" style="display: none;">
+      <h2 class="section-title">Recent Deployment Log</h2>
+      <div class="deployment-log" id="deployment-log"></div>
+    </section>
+
+    <footer>
+      <p>Constellation25 Swarm Orchestrator • Maintained by the C25 Agents</p>
+      <p>Last sync: <span id="last-sync">Just now</span></p>
+    </footer>
+  </div>
+
+  <script>
+    const repos = {
+      core: [
+        { name: 'constellation25', desc: 'Main swarm coordination', status: 'active' },
+        { name: 'c25-monorepo', desc: 'Shared libraries', status: 'active' },
+        { name: 'c25-master', desc: 'Master configuration', status: 'active' },
+        { name: 'c25-deploy-router', desc: 'Deployment routing', status: 'setup' },
+        { name: 'c25-training-corpus', desc: 'Agent training data', status: 'active' },
+        { name: 'c25-constellation25-swarm', desc: 'Swarm algorithms', status: 'setup' }
+      ],
+      app: [
+        { name: 'mybuyo-biometric-saas', desc: 'Biometric authentication', status: 'active' },
+        { name: 'videocourts-org', desc: 'Legal evidence management', status: 'active' },
+        { name: 'videocourts_backend', desc: 'Video processing API', status: 'active' },
+        { name: 'aimetaverse-demo', desc: 'AI metaverse experiences', status: 'active' },
+        { name: 'sovereign-ai-empire', desc: 'Sovereign AI governance', status: 'pending' }
+      ],
+      infra: [
+        { name: 'c25-fdroid-repo', desc: 'F-Droid repository', status: 'active' },
+        { name: 'c25-termux-addon', desc: 'Termux add-ons', status: 'active' },
+        { name: 'c25-secure-github-auth', desc: 'Secure GitHub auth', status: 'setup' },
+        { name: 'llama.cpp', desc: 'Local LLM inference', status: 'active' }
+      ]
+    };
+
+    const agents = [
+      { name: 'Sol', domain: 'Coordination', initial: 'S' },
+      { name: 'Mercury', domain: 'Fast Decisions', initial: 'M' },
+      { name: 'Venus', domain: 'Aesthetics', initial: 'V' },
+      { name: 'Earth', domain: 'Ground Truth', initial: 'E' },
+      { name: 'Mars', domain: 'Testing', initial: 'M' },
+      { name: 'Jupiter', domain: 'Expansion', initial: 'J' },
+      { name: 'Saturn', domain: 'Structure', initial: 'S' },
+      { name: 'Uranus', domain: 'Innovation', initial: 'U' },
+      { name: 'Neptune', domain: 'Deep Learning', initial: 'N' },
+      { name: 'Pluto', domain: 'Edge Cases', initial: 'P' },
+      { name: 'Luna', domain: 'Memory', initial: 'L' },
+      { name: 'Titan', domain: 'Storage', initial: 'T' },
+      { name: 'Europa', domain: 'Discovery', initial: 'E' },
+      { name: 'Ganymede', domain: 'Security', initial: 'G' },
+      { name: 'Callisto', domain: 'Monitoring', initial: 'C' },
+      { name: 'Io', domain: 'Volatility', initial: 'I' },
+      { name: 'Triton', domain: 'Cold Storage', initial: 'T' },
+      { name: 'Charon', domain: 'Partnerships', initial: 'C' },
+      { name: 'Eris', domain: 'Chaos Testing', initial: 'E' },
+      { name: 'Haumea', domain: 'Speed', initial: 'H' },
+      { name: 'Makemake', domain: 'Creation', initial: 'M' },
+      { name: 'Sedna', domain: 'Deep Archive', initial: 'S' },
+      { name: 'Quaoar', domain: 'Analysis', initial: 'Q' },
+      { name: 'Orcus', domain: 'Underworld', initial: 'O' },
+      { name: 'Gonggong', domain: 'Communication', initial: 'G' }
+    ];
+
+    const deployments = [
+      { time: '10:42:15', msg: 'MyBuyo staging deployed successfully', type: 'success' },
+      { time: '10:38:22', msg: 'VideoCourts backend build completed', type: 'success' },
+      { time: '10:35:01', msg: 'Security scan passed for c25-monorepo', type: 'success' },
+      { time: '10:30:45', msg: 'Agent Sol initiated deployment sequence', type: 'info' },
+      { time: '10:28:12', msg: 'Changes detected in mybuyo-biometric-saas', type: 'info' },
+      { time: '09:55:33', msg: 'Production deployment approved by admin', type: 'success' },
+      { time: '09:52:18', msg: 'All 25 agents notified of deployment', type: 'info' },
+      { time: '09:45:00', msg: 'Daily swarm health check completed', type: 'success' }
+    ];
+
+    function renderRepos() {
+      const createCard = (repo, badgeClass) => `
+        <div class="repo-card">
+          <span class="status-dot status-${repo.status}"></span>
+          <h3>${repo.name}</h3>
+          <p>${repo.desc}</p>
+          <span class="badge ${badgeClass}">${badgeClass.replace('badge-', '')}</span>
+        </div>
+      `;
+
+      document.getElementById('core-repos').innerHTML = 
+        repos.core.map(r => createCard(r, 'badge-core')).join('');
+      document.getElementById('app-repos').innerHTML = 
+        repos.app.map(r => createCard(r, 'badge-app')).join('');
+      document.getElementById('infra-repos').innerHTML = 
+        repos.infra.map(r => createCard(r, 'badge-infra')).join('');
+    }
+
+    function renderAgents() {
+      document.getElementById('agent-list').innerHTML = 
+        agents.map(a => `
+          <div class="agent-card">
+            <div class="agent-icon">${a.initial}</div>
+            <div class="agent-info">
+              <h4>${a.name}</h4>
+              <p>${a.domain}</p>
+            </div>
+          </div>
+        `).join('');
+    }
+
+    function renderDeployments() {
+      document.getElementById('deployment-log').innerHTML = 
+        deployments.map(d => `
+          <div class="log-entry">
+            <span class="log-time">[${d.time}]</span>
+            <span class="log-${d.type}">${d.msg}</span>
+          </div>
+        `).join('');
+    }
+
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        document.getElementById('repos-section').style.display = 
+          tab.dataset.tab === 'repos' ? 'block' : 'none';
+        document.getElementById('agents-section').style.display = 
+          tab.dataset.tab === 'agents' ? 'block' : 'none';
+        document.getElementById('deployments-section').style.display = 
+          tab.dataset.tab === 'deployments' ? 'block' : 'none';
+      });
+    });
+
+    // Initialize
+    renderRepos();
+    renderAgents();
+    renderDeployments();
+
+    // Update timestamp
+    document.getElementById('last-sync').textContent = new Date().toLocaleTimeString();
+  </script>
+</body>
+</html>
