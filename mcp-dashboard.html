@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCP Server Registry Dashboard</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --surface: #111827;
+      --border: #1f2937;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --c1: #38bdf8;
+      --c2: #a78bfa;
+      --c3: #34d399;
+      --c4: #f472b6;
+      --font: system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      background: linear-gradient(90deg, var(--c1), var(--c2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    #status {
+      color: var(--c3);
+    }
+
+    .search-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 250px;
+      padding: 0.75rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--c1);
+    }
+
+    .filter-select {
+      padding: 0.75rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .tab {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .tab:hover {
+      border-color: var(--c1);
+      color: var(--text);
+    }
+
+    .tab.active {
+      background: var(--c1);
+      color: var(--bg);
+      border-color: var(--c1);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      transition: 0.2s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .card:hover {
+      border-color: var(--c1);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--c1), var(--c2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: var(--bg);
+    }
+
+    .card h3 {
+      font-size: 0.95rem;
+      color: var(--c1);
+      margin: 0;
+    }
+
+    .card p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+      line-height: 1.4;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .card-author {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .tag {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 2px 8px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--c1);
+      border-radius: 10px;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .tag.local {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--c3);
+    }
+
+    .tag.remote {
+      background: rgba(167, 139, 250, 0.15);
+      color: var(--c2);
+    }
+
+    .tag.api-required {
+      background: rgba(244, 114, 182, 0.15);
+      color: var(--c4);
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 0.8rem;
+      border-radius: 8px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.5rem;
+      margin-bottom: 0.2rem;
+      color: var(--c1);
+    }
+
+    .stat span {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+      font-size: 1.2rem;
+      color: var(--c1);
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.25rem;
+    }
+
+    .modal-close:hover {
+      color: var(--text);
+    }
+
+    .modal-content {
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-section {
+      margin-bottom: 1rem;
+    }
+
+    .modal-section h4 {
+      color: var(--c2);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-section p {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    .config-block {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.8rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      color: var(--c3);
+    }
+
+    .btn {
+      background: var(--c1);
+      color: var(--bg);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 0.9rem;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--c1);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      margin-top: 3rem;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .search-bar {
+        flex-direction: column;
+      }
+
+      .search-input {
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>🔌 MCP Server Registry</h1>
+      <div id="status">● All systems operational</div>
+    </header>
+
+    <div class="meta">
+      <div class="stat">
+        <strong id="total-servers">0</strong>
+        <span>Total Servers</span>
+      </div>
+      <div class="stat">
+        <strong id="local-servers">0</strong>
+        <span>Local (No API Key)</span>
+      </div>
+      <div class="stat">
+        <strong id="remote-servers">0</strong>
+        <span>Remote (API Key Required)</span>
+      </div>
+      <div class="stat">
+        <strong id="categories-count">0</strong>
+        <span>Categories</span>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" class="search-input" id="search-input" placeholder="Search MCP servers by name, description, or author...">
+      <select class="filter-select" id="category-filter">
+        <option value="all">All Categories</option>
+        <option value="local">Local / No API Key</option>
+        <option value="remote">Remote / API Key Required</option>
+        <option value="database">Database</option>
+        <option value="cloud">Cloud Services</option>
+        <option value="devtools">Developer Tools</option>
+        <option value="web">Web & Search</option>
+        <option value="security">Security</option>
+        <option value="productivity">Productivity</option>
+        <option value="ai-ml">AI & ML</option>
+      </select>
+      <select class="filter-select" id="sort-filter">
+        <option value="popularity">Sort by Popularity</option>
+        <option value="name">Sort by Name</option>
+        <option value="author">Sort by Author</option>
+      </select>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-filter="all">All</button>
+      <button class="tab" data-filter="local">Local</button>
+      <button class="tab" data-filter="remote">Remote</button>
+      <button class="tab" data-filter="popular">Popular</button>
+    </div>
+
+    <div class="grid" id="servers-grid"></div>
+
+    <footer>
+      <p>MCP Server Registry Dashboard • 135+ Servers Available • Built for AI Agent Integration</p>
+    </footer>
+  </div>
+
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">Server Details</h2>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <div class="modal-content" id="modal-content"></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="copy-config">Copy Config</button>
+        <button class="btn" id="install-server">Install</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const mcpServers = [
+      {"name": "Chrome DevTools", "author": "ChromeDevTools", "description": "MCP server for Chrome DevTools", "installs": 46130, "category": "devtools", "type": "local", "package": "@chrome-devtools/mcp"},
+      {"name": "Playwright", "author": "microsoft", "description": "Automate web browsers using accessibility trees for testing and data extraction", "installs": 34786, "category": "devtools", "type": "local", "package": "@playwright/mcp"},
+      {"name": "GitHub", "author": "github", "description": "Connect AI assistants to GitHub - manage repos, issues, PRs, and workflows through natural language", "installs": 31258, "category": "devtools", "type": "remote", "package": "@github/mcp", "apiRequired": true},
+      {"name": "Serena", "author": "oraios", "description": "Semantic code retrieval & editing tools for coding agents", "installs": 26158, "category": "devtools", "type": "remote", "package": "@oraios/serena-mcp"},
+      {"name": "Unity", "author": "CoplayDev", "description": "Control the Unity Editor from MCP clients via a Unity bridge + local Python server", "installs": 12173, "category": "devtools", "type": "local", "package": "@unity/mcp-python"},
+      {"name": "Firecrawl", "author": "firecrawl", "description": "Extract web data with Firecrawl", "installs": 6864, "category": "web", "type": "remote", "package": "@firecrawl/mcp", "apiRequired": true},
+      {"name": "Desktop Commander", "author": "wonderwhy-er", "description": "MCP server for terminal commands, file operations, and process management", "installs": 6254, "category": "devtools", "type": "local", "package": "@desktop-commander/mcp"},
+      {"name": "Notion", "author": "makenotion", "description": "Official MCP server for Notion API", "installs": 4484, "category": "productivity", "type": "remote", "package": "@notion/mcp", "apiRequired": true},
+      {"name": "Azure MCP Server", "author": "microsoft", "description": "All Azure MCP tools to create a seamless connection between AI agents and Azure services", "installs": 3424, "category": "cloud", "type": "remote", "package": "@azure/mcp", "apiRequired": true},
+      {"name": "Microsoft Fabric MCP Server", "author": "microsoft", "description": "MCP tools for interacting with Microsoft Fabric", "installs": 3424, "category": "cloud", "type": "remote", "package": "@microsoft/fabric-mcp", "apiRequired": true},
+      {"name": "DBHub", "author": "bytebase", "description": "Minimal, token-efficient Database MCP Server for PostgreSQL, MySQL, SQL Server, SQLite, MariaDB", "installs": 3110, "category": "database", "type": "remote", "package": "@bytebase/dbhub-mcp", "apiRequired": true},
+      {"name": "Supabase", "author": "supabase", "description": "MCP server for interacting with the Supabase platform", "installs": 2788, "category": "database", "type": "remote", "package": "@supabase/mcp", "apiRequired": true},
+      {"name": "Brightdata", "author": "brightdata", "description": "Bright Data's Web MCP server enabling AI agents to search, extract & navigate the web", "installs": 2489, "category": "web", "type": "remote", "package": "@brightdata/mcp", "apiRequired": true},
+      {"name": "Tavily", "author": "tavily-ai", "description": "MCP server for advanced web search using Tavily", "installs": 2186, "category": "web", "type": "remote", "package": "@tavily/mcp", "apiRequired": true},
+      {"name": "Azure DevOps", "author": "microsoft", "description": "Interact with Azure DevOps services like repositories, work items, builds, releases, test plans, and code search", "installs": 1875, "category": "devtools", "type": "remote", "package": "@azure/devops-mcp", "apiRequired": true},
+      {"name": "Microsoft Learn", "author": "MicrosoftDocs", "description": "Enables clients like GitHub Copilot and other AI agents to bring trusted and up-to-date information directly from Microsoft's official documentation", "installs": 1758, "category": "devtools", "type": "remote", "package": "@microsoft/learn-mcp"},
+      {"name": "Figma MCP Server", "author": "figma", "description": "The Figma MCP server brings Figma design context directly into your AI workflow", "installs": 1709, "category": "design", "type": "remote", "package": "@figma/mcp", "apiRequired": true},
+      {"name": "Apify", "author": "apify", "description": "Extract data from any website with thousands of scrapers, crawlers, and automations on Apify Store", "installs": 1684, "category": "web", "type": "remote", "package": "@apify/mcp", "apiRequired": true},
+      {"name": "Stripe", "author": "stripe", "description": "MCP server integrating with Stripe - tools for customers, products, payments, and more", "installs": 1646, "category": "productivity", "type": "remote", "package": "@stripe/mcp", "apiRequired": true},
+      {"name": "Microsoft NuGet", "author": "NuGet", "description": "A Model Context Protocol (MCP) server for NuGet", "installs": 1552, "category": "devtools", "type": "remote", "package": "@nuget/mcp"},
+      {"name": "Terraform", "author": "hashicorp", "description": "Generate more accurate Terraform and automate workflows for HCP Terraform and Terraform Enterprise", "installs": 1459, "category": "cloud", "type": "remote", "package": "@hashicorp/terraform-mcp", "apiRequired": true},
+      {"name": "Mongodb", "author": "mongodb-js", "description": "MongoDB Model Context Protocol Server", "installs": 1076, "category": "database", "type": "remote", "package": "@mongodb/mcp", "apiRequired": true},
+      {"name": "SearXNG Search", "author": "ihor-sokoliuk", "description": "MCP server for SearXNG — privacy-respecting web search with pagination, URL reading", "installs": 1011, "category": "web", "type": "local", "package": "@searxng/mcp"},
+      {"name": "Nuxt", "author": "antfu", "description": "MCP server helping models understand your Vite/Nuxt app", "installs": 910, "category": "devtools", "type": "local", "package": "@nuxt/mcp"},
+      {"name": "StackQL MCP Server", "author": "stackql", "description": "SQL-native query and provisioning engine for cloud infrastructure, served over MCP", "installs": 861, "category": "cloud", "type": "remote", "package": "@stackql/mcp", "apiRequired": true},
+      {"name": "Atlassian Rovo MCP Server", "author": "atlassian", "description": "Connect to Atlassian Jira, Confluence, and Compass to search, create, and manage your work", "installs": 833, "category": "productivity", "type": "remote", "package": "@atlassian/rovo-mcp", "apiRequired": true},
+      {"name": "Vercel Next Dev Tools", "author": "vercel", "description": "Next.js development tools MCP server with stdio transport", "installs": 783, "category": "devtools", "type": "remote", "package": "@vercel/next-mcp", "apiRequired": true},
+      {"name": "Getsentry Sentry", "author": "getsentry", "description": "MCP server for Sentry - error monitoring, issue tracking, and debugging for AI assistants", "installs": 753, "category": "devtools", "type": "remote", "package": "@sentry/mcp", "apiRequired": true},
+      {"name": "Elasticsearch", "author": "elastic", "description": "MCP server for connecting to Elasticsearch data and indices. Supports search queries, mappings, ES|QL, and shard information through natural language interactions", "installs": 685, "category": "database", "type": "remote", "package": "@elastic/mcp", "apiRequired": true},
+      {"name": "Neon", "author": "neondatabase", "description": "MCP server for interacting with Neon Management API and databases", "installs": 617, "category": "database", "type": "remote", "package": "@neon/mcp", "apiRequired": true},
+      {"name": "SonarQube MCP Server", "author": "SonarSource", "description": "Analyze code quality and security with SonarQube Server or Cloud directly in AI assistants", "installs": 590, "category": "security", "type": "remote", "package": "@sonarqube/mcp", "apiRequired": true},
+      {"name": "Chroma", "author": "chroma-core", "description": "Provides data retrieval capabilities powered by Chroma, enabling AI models to create collections over generated data and user inputs, and retrieve that data using vector search, full text search, metadata filtering, and more", "installs": 568, "category": "ai-ml", "type": "local", "package": "@chroma-core/mcp"},
+      {"name": "Todoist", "author": "Doist", "description": "A set of tools to connect to AI agents, to allow them to use Todoist on a user's behalf", "installs": 524, "category": "productivity", "type": "remote", "package": "@todoist/mcp", "apiRequired": true},
+      {"name": "Monday", "author": "mondaycom", "description": "MCP server for monday.com integration", "installs": 415, "category": "productivity", "type": "remote", "package": "@monday/mcp", "apiRequired": true},
+      {"name": "Mapbox", "author": "mapbox", "description": "Geospatial intelligence with Mapbox APIs like geocoding, POI search, directions, isochrones, etc", "installs": 348, "category": "web", "type": "remote", "package": "@mapbox/mcp", "apiRequired": true},
+      {"name": "Zapier", "author": "zapier", "description": "Zapier MCP is a remote MCP server that gives your AI direct access to 8,000+ apps and 30,000+ actions—no complex API integrations required", "installs": 345, "category": "productivity", "type": "remote", "package": "@zapier/mcp", "apiRequired": true},
+      {"name": "Imagesorcery", "author": "sunriseapps", "description": "Local image processing with computer vision capabilities including object detection, OCR, image editing, and transformations", "installs": 324, "category": "ai-ml", "type": "local", "package": "@imagesorcery/mcp"},
+      {"name": "PMB AI", "author": "oleksiijko", "description": "Local-first persistent memory for AI coding agents", "installs": 292, "category": "ai-ml", "type": "local", "package": "@pmb-ai/mcp"},
+      {"name": "Svelte MCP", "author": "sveltejs", "description": "The official Svelte MCP server providing docs and autofixing tools for Svelte development", "installs": 285, "category": "devtools", "type": "local", "package": "@sveltejs/mcp"},
+      {"name": "Postman", "author": "postmanlabs", "description": "A basic MCP server to operate on the Postman API", "installs": 276, "category": "devtools", "type": "remote", "package": "@postman/mcp", "apiRequired": true},
+      {"name": "Hugging Face", "author": "huggingface", "description": "Access Hugging Face models, datasets, Spaces, papers, collections via MCP", "installs": 259, "category": "ai-ml", "type": "remote", "package": "@huggingface/mcp", "apiRequired": true},
+      {"name": "Azure AI Foundry", "author": "microsoft-foundry", "description": "An experimental MCP server implementation for Azure AI Foundry that exposes unified tools for models, knowledge, evaluation and deployment", "installs": 252, "category": "ai-ml", "type": "remote", "package": "@azure/ai-foundry-mcp", "apiRequired": true},
+      {"name": "CrowdStrike Falcon MCP Server", "author": "CrowdStrike", "description": "Connects AI agents with CrowdStrike Falcon for security analysis and automation", "installs": 211, "category": "security", "type": "remote", "package": "@crowdstrike/falcon-mcp", "apiRequired": true},
+      {"name": "Awesome Copilot MCP Server", "author": "microsoft", "description": "An MCP server that stores Copilot customizations from the Awesome Copilot repository", "installs": 191, "category": "devtools", "type": "local", "package": "@microsoft/awesome-copilot-mcp"},
+      {"name": "pgEdge Postgres", "author": "pgEdge", "description": "Enterprise PostgreSQL MCP server with NL queries, hybrid search (pgvector+BM25), and web UI", "installs": 190, "category": "database", "type": "local", "package": "@pgedge/mcp"},
+      {"name": "Glean Remote MCP Server", "author": "gleanwork", "description": "Remote MCP Server that securely connects Glean Enterprise Knowledge with your IDE, LLM, or agents", "installs": 163, "category": "productivity", "type": "remote", "package": "@glean/mcp", "apiRequired": true},
+      {"name": "Logfire", "author": "pydantic", "description": "Provides access to OpenTelemetry traces and metrics through Logfire", "installs": 162, "category": "devtools", "type": "remote", "package": "@logfire/mcp", "apiRequired": true},
+      {"name": "Serpapi", "author": "serpapi", "description": "Official SerpApi MCP server for Google, Bing, and other search engines", "installs": 153, "category": "web", "type": "remote", "package": "@serpapi/mcp", "apiRequired": true},
+      {"name": "SAP Fiori", "author": "SAP", "description": "SAP Fiori - Model Context Protocol (MCP) server", "installs": 151, "category": "devtools", "type": "remote", "package": "@sap/fiori-mcp", "apiRequired": true},
+      {"name": "Azure Kubernetes Service", "author": "Azure", "description": "Interact with Azure Kubernetes Service (AKS) from MCP clients", "installs": 134, "category": "cloud", "type": "remote", "package": "@azure/aks-mcp", "apiRequired": true},
+      {"name": "Webflow", "author": "webflow", "description": "AI-powered design and management for Webflow Sites", "installs": 133, "category": "design", "type": "remote", "package": "@webflow/mcp", "apiRequired": true},
+      {"name": "Dynatrace", "author": "dynatrace-oss", "description": "Access Dynatrace observability data: logs, metrics, problems, vulnerabilities via DQL and Davis AI", "installs": 129, "category": "devtools", "type": "remote", "package": "@dynatrace/mcp", "apiRequired": true},
+      {"name": "Miro", "author": "miroapp", "description": "Official Miro MCP server - Supports context to code and creating diagrams, docs, and data tables", "installs": 129, "category": "productivity", "type": "remote", "package": "@miro/mcp", "apiRequired": true},
+      {"name": "Fabric Real-Time Intelligence", "author": "microsoft", "description": "Query Eventhouse/ADX with KQL and manage Eventstreams", "installs": 122, "category": "cloud", "type": "remote", "package": "@microsoft/fabric-realtime-mcp", "apiRequired": true},
+      {"name": "Hostinger API", "author": "hostinger", "description": "MCP server for Hostinger API", "installs": 119, "category": "cloud", "type": "remote", "package": "@hostinger/mcp", "apiRequired": true},
+      {"name": "Email Inbox API + Sending by Sendmux", "author": "Sendmux", "description": "AI email inbox and sending tools with attachments, search, live events, and webhooks", "installs": 107, "category": "productivity", "type": "remote", "package": "@sendmux/mcp", "apiRequired": true},
+      {"name": "Cap JS", "author": "cap-js", "description": "Model Context Protocol (MCP) server for AI-assisted development of CAP applications", "installs": 101, "category": "devtools", "type": "local", "package": "@cap-js/mcp"},
+      {"name": "Octopus Deploy", "author": "OctopusDeploy", "description": "Deliver software to Kubernetes, multi-cloud, on-prem infrastructure, and anywhere else", "installs": 98, "category": "cloud", "type": "remote", "package": "@octopus/mcp", "apiRequired": true},
+      {"name": "Clarity", "author": "microsoft", "description": "Fetch Clarity analytics via MCP clients", "installs": 90, "category": "analytics", "type": "remote", "package": "@microsoft/clarity-mcp", "apiRequired": true},
+      {"name": "UI5", "author": "UI5", "description": "MCP server for SAPUI5/OpenUI5 development", "installs": 89, "category": "devtools", "type": "local", "package": "@ui5/mcp"},
+      {"name": "ScrapeGraphAI Scrapegraph", "author": "ScrapeGraphAI", "description": "AI-powered web scraping and data extraction capabilities through ScrapeGraph API", "installs": 86, "category": "web", "type": "remote", "package": "@scrapegraph/mcp", "apiRequired": true},
+      {"name": "Arm MCP Server", "author": "arm", "description": "Official Arm MCP server for code migration, optimization, and Arm architecture guidance", "installs": 83, "category": "devtools", "type": "remote", "package": "@arm/mcp"},
+      {"name": "DeepWiki", "author": "CognitionAI", "description": "Devin-generated docs for any public repo", "installs": 80, "category": "devtools", "type": "remote", "package": "@deepwiki/mcp"},
+      {"name": "PagerDuty", "author": "PagerDuty", "description": "PagerDuty's official MCP server which provides tools to interact with your PagerDuty account", "installs": 73, "category": "devtools", "type": "remote", "package": "@pagerduty/mcp", "apiRequired": true},
+      {"name": "Sonatype Dependency Management", "author": "sonatype", "description": "Sonatype component intelligence: versions, security analysis, and Trust Score recommendations", "installs": 72, "category": "security", "type": "remote", "package": "@sonatype/mcp", "apiRequired": true},
+      {"name": "HitKeep", "author": "PascaleBeier", "description": "Read-only MCP server for aggregate HitKeep analytics and official documentation", "installs": 69, "category": "analytics", "type": "remote", "package": "@hitkeep/mcp"},
+      {"name": "Codacy", "author": "codacy", "description": "MCP Server for the Codacy API, enabling access to repositories, files, quality, coverage, security and more", "installs": 60, "category": "security", "type": "remote", "package": "@codacy/mcp", "apiRequired": true},
+      {"name": "Mapbox MCP Devkit Server", "author": "mapbox", "description": "Provides AI assistants with direct access to Mapbox developer APIs and documentation", "installs": 58, "category": "devtools", "type": "remote", "package": "@mapbox/devkit-mcp", "apiRequired": true},
+      {"name": "Snyk", "author": "snyk", "description": "Easily find and fix security issues in your applications leveraging Snyk platform capabilities", "installs": 52, "category": "security", "type": "remote", "package": "@snyk/mcp", "apiRequired": true},
+      {"name": "Amplitude", "author": "amplitude", "description": "Search, access, and get insights on your Amplitude data", "installs": 45, "category": "analytics", "type": "remote", "package": "@amplitude/mcp", "apiRequired": true},
+      {"name": "Microsoft MCP Server for Enterprise", "author": "microsoft", "description": "Official Microsoft MCP Server to query Microsoft Entra data using natural language", "installs": 45, "category": "cloud", "type": "remote", "package": "@microsoft/enterprise-mcp", "apiRequired": true},
+      {"name": "Zscaler Zero Trust Exchange", "author": "zscaler", "description": "Manage Zscaler Zero Trust Exchange via 280+ tools — ZPA, ZIA, ZDX, ZCC, EASM, and more", "installs": 40, "category": "security", "type": "remote", "package": "@zscaler/mcp", "apiRequired": true},
+      {"name": "SmartBear MCP", "author": "SmartBear", "description": "MCP server for AI access to SmartBear tools, including BugSnag, Reflect, Swagger, PactFlow, QTM4J", "installs": 39, "category": "devtools", "type": "remote", "package": "@smartbear/mcp", "apiRequired": true},
+      {"name": "ContextStream MCP Server", "author": "contextstream", "description": "ContextStream MCP server for code context, memory, search, and AI tools", "installs": 37, "category": "ai-ml", "type": "local", "package": "@contextstream/mcp"},
+      {"name": "prompts.chat MCP Server", "author": "f", "description": "Search and retrieve AI prompts from prompts.chat, the social platform for AI prompts", "installs": 32, "category": "ai-ml", "type": "remote", "package": "@prompts-chat/mcp"},
+      {"name": "PubNub MCP Server", "author": "pubnub", "description": "PubNub Model Context Protocol MCP Server for Cursor and Claude", "installs": 32, "category": "devtools", "type": "remote", "package": "@pubnub/mcp", "apiRequired": true},
+      {"name": "JustCall MCP Server", "author": "saaslabsco", "description": "JustCall MCP Server enables LLMs and AI agents to make voice calls and send SMS via JustCall APIs", "installs": 25, "category": "productivity", "type": "remote", "package": "@justcall/mcp", "apiRequired": true},
+      {"name": "Rigour", "author": "rigour-labs", "description": "Quality gates for AI agents. Lint, test, build checks with memory persistence", "installs": 23, "category": "devtools", "type": "local", "package": "@rigour/mcp"},
+      {"name": "Dynatrace Managed", "author": "dynatrace-oss", "description": "MCP server for Dynatrace Managed to access logs, events, and metrics", "installs": 22, "category": "devtools", "type": "remote", "package": "@dynatrace/managed-mcp", "apiRequired": true},
+      {"name": "The MCP server for GoReleaser", "author": "goreleaser", "description": "GoReleaser MCP server", "installs": 22, "category": "devtools", "type": "local", "package": "@goreleaser/mcp"},
+      {"name": "Launchdarkly", "author": "launchdarkly", "description": "Official LaunchDarkly MCP Server for feature flag management and experimentation. Enables AI agents to interact with LaunchDarkly APIs for managing feature flags, AI configs, targeting rules, and gradual rollouts across multiple environments", "installs": 21, "category": "devtools", "type": "remote", "package": "@launchdarkly/mcp", "apiRequired": true},
+      {"name": "Venomseven Nslookup", "author": "NsLookup-io", "description": "DNS lookups, health reports, SSL certs, security scans, GEO scoring, uptime checks", "installs": 20, "category": "security", "type": "local", "package": "@nslookup/mcp"},
+      {"name": "Stack Overflow MCP Server", "author": "StackExchange", "description": "Access Stack Overflow's trusted and verified technical questions and answers", "installs": 19, "category": "devtools", "type": "remote", "package": "@stackoverflow/mcp"},
+      {"name": "Topos", "author": "Krv-Labs", "description": "Structural code-quality tools for AI coding agents", "installs": 19, "category": "devtools", "type": "local", "package": "@topos/mcp"},
+      {"name": "UI5 Webcomponents", "author": "UI5", "description": "MCP server for UI5 Web Components development assistance", "installs": 19, "category": "devtools", "type": "local", "package": "@ui5/webcomponents-mcp"},
+      {"name": "Claude FAF", "author": "Wolfe-Jam", "description": "Persistent project context for Claude. IANA-registered .faf format", "installs": 19, "category": "ai-ml", "type": "local", "package": "@claude-faf/mcp"},
+      {"name": "Wix", "author": "wix", "description": "A Model Context Protocol server for Wix AI tools", "installs": 15, "category": "design", "type": "remote", "package": "@wix/mcp", "apiRequired": true},
+      {"name": "Port", "author": "port-labs", "description": "Port.io mcp server", "installs": 15, "category": "devtools", "type": "remote", "package": "@port/mcp", "apiRequired": true},
+      {"name": "Sourcegraph MCP Server", "author": "sourcegraph-community", "description": "Sourcegraph code search, semantic search, go-to-definition, find-references, and diff search", "installs": 14, "category": "devtools", "type": "remote", "package": "@sourcegraph/mcp", "apiRequired": true},
+      {"name": "Axiom", "author": "axiomhq", "description": "List datasets, schemas, run APL queries, and use prompts for exploration, anomalies, and monitoring", "installs": 12, "category": "analytics", "type": "remote", "package": "@axiom/mcp", "apiRequired": true},
+      {"name": "Dev Box", "author": "microsoft", "description": "This server enables natural language interactions for developer-focused operations like managing Dev Boxes, configurations, and pools", "installs": 12, "category": "devtools", "type": "remote", "package": "@microsoft/devbox-mcp", "apiRequired": true},
+      {"name": "Longbridge", "author": "longbridge", "description": "US/HK markets — 145 tools: quotes, options, orders, fundamentals, screener, IPO, alerts & DCA", "installs": 11, "category": "productivity", "type": "remote", "package": "@longbridge/mcp", "apiRequired": true},
+      {"name": "Vercel", "author": "vercel", "description": "An MCP server for Vercel", "installs": 10, "category": "cloud", "type": "remote", "package": "@vercel/mcp", "apiRequired": true},
+      {"name": "Control Plane", "author": "controlplane-com", "description": "Deploy and operate workloads, secrets, and networking across AWS, GCP, Azure, and private clouds", "installs": 9, "category": "cloud", "type": "remote", "package": "@controlplane/mcp", "apiRequired": true},
+      {"name": "JFrog Remote MCP Server", "author": "jfrog", "description": "MCP Server for JFrog, providing tools for development and artifact management", "installs": 9, "category": "devtools", "type": "remote", "package": "@jfrog/mcp", "apiRequired": true},
+      {"name": "Stackhawk", "author": "stackhawk", "description": "An MCP server that provides interaction with StackHawk's security scanning platform", "installs": 8, "category": "security", "type": "remote", "package": "@stackhawk/mcp", "apiRequired": true},
+      {"name": "Intercom", "author": "intercom", "description": "Enable AI agents to securely access and interact with your Intercom data whenever helpful", "installs": 7, "category": "productivity", "type": "remote", "package": "@intercom/mcp", "apiRequired": true},
+      {"name": "Anima MCP Server", "author": "AnimaApp", "description": "Connect AI coding agents to Anima Playground, Figma, and your design system", "installs": 6, "category": "design", "type": "remote", "package": "@anima/mcp", "apiRequired": true},
+      {"name": "Box", "author": "box", "description": "Securely connect AI agents to your enterprise content in Box", "installs": 5, "category": "productivity", "type": "remote", "package": "@box/mcp", "apiRequired": true},
+      {"name": "AlvisoOculus Optionsahoy", "author": "AlvisoOculus", "description": "Equity comp tax/trade optimizer: ISO/AMT exercise, NSO, RSU, QSBS, concentration, hedging. 50-state", "installs": 5, "category": "productivity", "type": "remote", "package": "@optionsahoy/mcp"},
+      {"name": "memo", "author": "jagoff", "description": "Memory for AI agents — MLX (Apple Silicon) or CPU (Linux), sqlite-vec + BM25, zero cloud", "installs": 5, "category": "ai-ml", "type": "local", "package": "@memo/mcp"},
+      {"name": "QWarranto Leafengines", "author": "QWarranto", "description": "🌱 Agricultural AI: Soil analysis, crop recommendations, weather forecasts. FREE TurboQuant", "installs": 5, "category": "ai-ml", "type": "remote", "package": "@leafengines/mcp"},
+      {"name": "flatten-mcp", "author": "shayaShav", "description": "Flatten Claude Code sessions: keep every prompt and event verbatim, resume at a lower token count", "installs": 5, "category": "devtools", "type": "local", "package": "@flatten-mcp/server"},
+      {"name": ".FAF Context", "author": "Wolfe-Jam", "description": "Dedicated IDE Edition. Persistent project context for Cursor, Windsurf, Cline, VS Code", "installs": 5, "category": "devtools", "type": "local", "package": "@faf-context/mcp"},
+      {"name": "Holomodular Servicebricks", "author": "holomodular", "description": "Generate a ServiceBricks C# .NET microservice as a ZIP file", "installs": 4, "category": "devtools", "type": "local", "package": "@servicebricks/mcp"},
+      {"name": "Wopee", "author": "Wopee-io", "description": "AI testing agents for web apps — dispatch test runs, crawls, fetch artifacts and status", "installs": 4, "category": "devtools", "type": "remote", "package": "@wopee/mcp", "apiRequired": true},
+      {"name": "LiveCheck AI", "author": "qualityclouds", "description": "Secure MCP runtime server for scanning and autofixing code issues", "installs": 3, "category": "security", "type": "remote", "package": "@livecheck/mcp"},
+      {"name": "ShipStatic", "author": "shipstatic", "description": "Deploy websites from AI agents. Free at mcp.shipstatic.com. Install for the full toolset", "installs": 3, "category": "cloud", "type": "remote", "package": "@shipstatic/mcp"},
+      {"name": "DC Hub — Data Center & Power Intelligence", "author": "azmartone67", "description": "Live data-center, power-grid, fiber, gas & M&A intelligence for AI agents — query and cite", "installs": 2, "category": "analytics", "type": "remote", "package": "@dc-hub/mcp"},
+      {"name": "Avalara Tax Content", "author": "avadev", "description": "Provides access to Avalara Tax Content: TTE configs, jobs, communications, lodging, autorental", "installs": 2, "category": "productivity", "type": "remote", "package": "@avalara/tax-content-mcp", "apiRequired": true},
+      {"name": "Avalara AvaTax", "author": "avadev", "description": "Access Avalara AvaTax API for tax calculation, transactions, nexus management, and compliance", "installs": 2, "category": "productivity", "type": "remote", "package": "@avalara/avatax-mcp", "apiRequired": true},
+      {"name": "Avalara Tax Registrations and Business Licenses", "author": "avadev", "description": "Provides access to Avalara Tax Registration and Business Licenses APIs for filings and registrations", "installs": 2, "category": "productivity", "type": "remote", "package": "@avalara/registrations-mcp", "apiRequired": true},
+      {"name": "Avalara Classification", "author": "avadev", "description": "Classify, validate & verify HS codes and access tariff compliance data for cross-border trade", "installs": 2, "category": "productivity", "type": "remote", "package": "@avalara/classification-mcp", "apiRequired": true},
+      {"name": "Avalara Cross-Border", "author": "avadev", "description": "Cross-border duty-rate and Trade & Tariff content lookups with product compliance and restrictions", "installs": 2, "category": "productivity", "type": "remote", "package": "@avalara/crossborder-mcp", "apiRequired": true},
+      {"name": "Avalara Developer Documentation", "author": "avadev", "description": "Provides access to Avalara developer documentation, integration guides, and code examples", "installs": 2, "category": "devtools", "type": "remote", "package": "@avalara/docs-mcp"},
+      {"name": "Avalara Returns", "author": "avadev", "description": "Provides access to Avalara Global Returns API for tax returns, filing calendars, and compliance data", "installs": 2, "category": "productivity", "type": "remote", "package": "@avalara/returns-mcp", "apiRequired": true},
+      {"name": "Memxus", "author": "memxus", "description": "Advanced memory system for AI agents with persistent storage", "installs": 2, "category": "ai-ml", "type": "local", "package": "@memxus/mcp"},
+      {"name": "Lovable", "author": "lovablelabs", "description": "Official MCP server for Lovable, the AI-powered full-stack app builder", "installs": 2, "category": "devtools", "type": "remote", "package": "@lovable/mcp", "apiRequired": true},
+      {"name": "Keenable Web Search", "author": "keenableai", "description": "Live web search and clean-markdown page fetch over the Keenable web index", "installs": 1, "category": "web", "type": "remote", "package": "@keenable/mcp", "apiRequired": true},
+      {"name": "Guru Remote MCP Server", "author": "guruhq", "description": "Guru MCP Server - Connect AI tools to your Guru knowledge base", "installs": 1, "category": "productivity", "type": "remote", "package": "@guru/mcp", "apiRequired": true},
+      {"name": "Microsoft Sentinel Data Exploration", "author": "microsoft", "description": "Find relevant security data from Sentinel data lake for building effective agents", "installs": 1, "category": "security", "type": "remote", "package": "@microsoft/sentinel-mcp", "apiRequired": true},
+      {"name": "Oakallow", "author": "oakallow", "description": "Runtime permission, approval, and audit layer for AI agent tool execution", "installs": 1, "category": "security", "type": "local", "package": "@oakallow/mcp"},
+      {"name": "Shipbook", "author": "ShipBook", "description": "Debug production issues using Shipbook logs and Loglytics error insights", "installs": 1, "category": "devtools", "type": "remote", "package": "@shipbook/mcp", "apiRequired": true},
+      {"name": "Plori", "author": "plori-ai", "description": "Create and drive plori cloud agents (each an AI agent on its own cloud computer) over MCP", "installs": 1, "category": "cloud", "type": "remote", "package": "@plori/mcp", "apiRequired": true},
+      {"name": "Lucid", "author": "lucidsoftware", "description": "Lucid's connector creates diagrams, searches, edits, shares, and retrieves docs to summarize", "installs": 0, "category": "design", "type": "remote", "package": "@lucid/mcp", "apiRequired": true},
+      {"name": "Black Duck Security Scanner", "author": "blackducksoftware", "description": "AI-powered security scanning using Black Duck Signal for vulnerability detection", "installs": 0, "category": "security", "type": "remote", "package": "@blackduck/mcp", "apiRequired": true},
+      {"name": "mabl", "author": "mablhq", "description": "AI-powered test automation: run tests, analyze failures, query results across mabl workspaces", "installs": 0, "category": "devtools", "type": "remote", "package": "@mabl/mcp", "apiRequired": true},
+      {"name": "Alterlab", "author": "RapierCraft", "description": "Web scraping MCP server — scrape, extract structured data, screenshot any site with anti-bot bypass", "installs": 0, "category": "web", "type": "remote", "package": "@alterlab/mcp", "apiRequired": true},
+      {"name": "OctoPerf", "author": "OctoPerf", "description": "Drive OctoPerf load testing from any AI agent: import, edit, validate, run scenarios, read metrics", "installs": 0, "category": "devtools", "type": "remote", "package": "@octoperf/mcp", "apiRequired": true},
+      {"name": "OpusClip", "author": "opus-pro", "description": "Turn long videos into AI-curated short clips: caption, reframe, thumbnail, schedule, and publish", "installs": 0, "category": "ai-ml", "type": "remote", "package": "@opusclip/mcp", "apiRequired": true},
+      {"name": "Outlook Personal MCP", "author": "salahawad", "description": "Full-control MCP server for a personal Outlook.com mailbox and calendar (Microsoft Graph)", "installs": 0, "category": "productivity", "type": "remote", "package": "@outlook-personal/mcp", "apiRequired": true},
+      {"name": "HVTracker MCP", "author": "YugantM", "description": "Pre-connect trust checks for AI agents and MCP servers using HVTracker's public trust registry", "installs": 0, "category": "security", "type": "remote", "package": "@hvtracker/mcp"}
+    ];
+
+    let currentFilter = 'all';
+    let currentSort = 'popularity';
+    let selectedServer = null;
+
+    function init() {
+      updateStats();
+      renderServers();
+      setupEventListeners();
+    }
+
+    function updateStats() {
+      const total = mcpServers.length;
+      const local = mcpServers.filter(s => s.type === 'local').length;
+      const remote = mcpServers.filter(s => s.type === 'remote').length;
+      const categories = [...new Set(mcpServers.map(s => s.category))].length;
+
+      document.getElementById('total-servers').textContent = total;
+      document.getElementById('local-servers').textContent = local;
+      document.getElementById('remote-servers').textContent = remote;
+      document.getElementById('categories-count').textContent = categories;
+    }
+
+    function filterAndSortServers() {
+      let filtered = [...mcpServers];
+      const searchTerm = document.getElementById('search-input').value.toLowerCase();
+      const categoryFilter = document.getElementById('category-filter').value;
+
+      // Search filter
+      if (searchTerm) {
+        filtered = filtered.filter(server => 
+          server.name.toLowerCase().includes(searchTerm) ||
+          server.description.toLowerCase().includes(searchTerm) ||
+          server.author.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      // Category filter
+      if (categoryFilter !== 'all') {
+        if (['local', 'remote'].includes(categoryFilter)) {
+          filtered = filtered.filter(server => server.type === categoryFilter);
+        } else {
+          filtered = filtered.filter(server => server.category === categoryFilter);
+        }
+      }
+
+      // Tab filter
+      if (currentFilter === 'local') {
+        filtered = filtered.filter(server => server.type === 'local');
+      } else if (currentFilter === 'remote') {
+        filtered = filtered.filter(server => server.type === 'remote');
+      } else if (currentFilter === 'popular') {
+        filtered = filtered.filter(server => server.installs >= 1000);
+      }
+
+      // Sort
+      if (currentSort === 'popularity') {
+        filtered.sort((a, b) => b.installs - a.installs);
+      } else if (currentSort === 'name') {
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+      } else if (currentSort === 'author') {
+        filtered.sort((a, b) => a.author.localeCompare(b.author));
+      }
+
+      return filtered;
+    }
+
+    function renderServers() {
+      const grid = document.getElementById('servers-grid');
+      const servers = filterAndSortServers();
+
+      grid.innerHTML = servers.map(server => {
+        const initials = server.name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+        const tagClass = server.type === 'local' ? 'local' : (server.apiRequired ? 'api-required' : 'remote');
+        const tagText = server.type === 'local' ? 'Local' : (server.apiRequired ? 'API Key' : 'Remote');
+        
+        return `
+          <div class="card" data-name="${server.name}" onclick="openModal('${server.name.replace(/'/g, "\\'")}')">
+            <span class="tag ${tagClass}">${tagText}</span>
+            <div class="card-header">
+              <div class="card-logo">${initials}</div>
+              <h3>${server.name}</h3>
+            </div>
+            <p>${server.description}</p>
+            <div class="card-meta">
+              <span class="card-author">By ${server.author}</span>
+              <span>⬇️ ${formatNumber(server.installs)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function formatNumber(num) {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
+      return num.toString();
+    }
+
+    function openModal(serverName) {
+      const server = mcpServers.find(s => s.name === serverName);
+      if (!server) return;
+
+      selectedServer = server;
+      const modal = document.getElementById('modal-overlay');
+      const title = document.getElementById('modal-title');
+      const content = document.getElementById('modal-content');
+
+      title.textContent = server.name;
+      
+      const configExample = `{
+  "mcpServers": {
+    "${server.name.replace(/\s+/g, '-').toLowerCase()}": {
+      "command": "npx",
+      "args": ["-y", "${server.package}"]${server.apiRequired ? ',\n      "env": {\n        "API_KEY": "your-api-key-here"\n      }' : ''}
+    }
+  }
+}`;
+
+      content.innerHTML = `
+        <div class="modal-section">
+          <h4>Description</h4>
+          <p>${server.description}</p>
+        </div>
+        <div class="modal-section">
+          <h4>Author</h4>
+          <p>${server.author}</p>
+        </div>
+        <div class="modal-section">
+          <h4>Installs</h4>
+          <p>${formatNumber(server.installs)} installations</p>
+        </div>
+        <div class="modal-section">
+          <h4>Type</h4>
+          <p>${server.type === 'local' ? '🟢 Local (No API Key Required)' : (server.apiRequired ? '🔴 API Key Required' : '🔵 Remote')}</p>
+        </div>
+        <div class="modal-section">
+          <h4>Category</h4>
+          <p>${server.category.charAt(0).toUpperCase() + server.category.slice(1)}</p>
+        </div>
+        <div class="modal-section">
+          <h4>Configuration</h4>
+          <div class="config-block">${configExample}</div>
+        </div>
+        ${server.apiRequired ? `
+        <div class="modal-section">
+          <h4>⚠️ API Key Required</h4>
+          <p>This server requires an API key from ${server.author}. Visit their developer portal to obtain credentials.</p>
+        </div>
+        ` : ''}
+      `;
+
+      modal.classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('active');
+      selectedServer = null;
+    }
+
+    function setupEventListeners() {
+      // Search input
+      document.getElementById('search-input').addEventListener('input', renderServers);
+
+      // Category filter
+      document.getElementById('category-filter').addEventListener('change', renderServers);
+
+      // Sort filter
+      document.getElementById('sort-filter').addEventListener('change', (e) => {
+        currentSort = e.target.value;
+        renderServers();
+      });
+
+      // Tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          e.target.classList.add('active');
+          currentFilter = e.target.dataset.filter;
+          renderServers();
+        });
+      });
+
+      // Modal close
+      document.getElementById('modal-close').addEventListener('click', closeModal);
+      document.getElementById('modal-overlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeModal();
+      });
+
+      // Copy config
+      document.getElementById('copy-config').addEventListener('click', () => {
+        if (selectedServer) {
+          const config = `{
+  "mcpServers": {
+    "${selectedServer.name.replace(/\s+/g, '-').toLowerCase()}": {
+      "command": "npx",
+      "args": ["-y", "${selectedServer.package}"]${selectedServer.apiRequired ? ',\n      "env": {\n        "API_KEY": "your-api-key-here"\n      }' : ''}
+    }
+  }
+}`;
+          navigator.clipboard.writeText(config);
+          alert('Configuration copied to clipboard!');
+        }
+      });
+
+      // Install button
+      document.getElementById('install-server').addEventListener('click', () => {
+        if (selectedServer) {
+          alert(`To install ${selectedServer.name}:\n\n1. Run: npx -y ${selectedServer.package}\n2. Add the configuration to your MCP config file\n${selectedServer.apiRequired ? '3. Obtain API key from ' + selectedServer.author : ''}`);
+        }
+      });
+
+      // Keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+      });
+    }
+
+    // Initialize on load
+    init();
+  </script>
+</body>
+</html>

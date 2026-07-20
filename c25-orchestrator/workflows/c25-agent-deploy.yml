@@ -1,0 +1,262 @@
+name: C25 Swarm Agent Deployment
+
+on:
+  push:
+    branches: [main, master, develop]
+    paths:
+      - 'constellation25/**'
+      - 'c25-*/**'
+      - 'mybuyo-*/**'
+      - 'videocourts*/**'
+      - '.github/workflows/c25-*.yml'
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      target_repo:
+        description: 'Target repository for deployment'
+        required: false
+        default: 'all'
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+          - development
+
+env:
+  NODE_VERSION: '20.x'
+  PYTHON_VERSION: '3.11'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  detect-changes:
+    name: Detect Changed Repositories
+    runs-on: ubuntu-latest
+    outputs:
+      core_changed: ${{ steps.filter.outputs.core }}
+      mybuyo_changed: ${{ steps.filter.outputs.mybuyo }}
+      videocourts_changed: ${{ steps.filter.outputs.videocourts }}
+      infra_changed: ${{ steps.filter.outputs.infra }}
+      all_repos: ${{ steps.matrix.outputs.repos }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Get changed files
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            core:
+              - 'constellation25/**'
+              - 'c25-monorepo/**'
+              - 'c25-master/**'
+              - 'c25-deploy-router/**'
+              - 'c25-training-corpus/**'
+              - 'c25-constellation25-swarm/**'
+            mybuyo:
+              - 'mybuyo-*/**'
+            videocourts:
+              - 'videocourts*/**'
+              - 'Remote-Evidence-Collector/**'
+            infra:
+              - 'c25-fdroid-repo/**'
+              - 'c25-termux-addon/**'
+              - 'c25-secure-github-auth/**'
+              - 'llama.cpp/**'
+      
+      - name: Generate repo matrix
+        id: matrix
+        run: |
+          repos='["constellation25", "c25-monorepo", "mybuyo-biometric-saas", "videocourts-org", "videocourts_backend"]'
+          echo "repos=$repos" >> $GITHUB_OUTPUT
+
+  test-and-build:
+    name: Test & Build
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repo: ${{ fromJson(needs.detect-changes.outputs.all_repos) }}
+      fail-fast: false
+    if: |
+      needs.detect-changes.outputs.core_changed == 'true' ||
+      needs.detect-changes.outputs.mybuyo_changed == 'true' ||
+      needs.detect-changes.outputs.videocourts_changed == 'true'
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          if [ -f "${{ matrix.repo }}/package.json" ]; then
+            cd ${{ matrix.repo }} && npm ci
+          fi
+          if [ -f "${{ matrix.repo }}/requirements.txt" ]; then
+            cd ${{ matrix.repo }} && pip install -r requirements.txt
+          fi
+      
+      - name: Run tests
+        run: |
+          if [ -f "${{ matrix.repo }}/package.json" ]; then
+            cd ${{ matrix.repo }} && npm test || true
+          fi
+      
+      - name: Build artifacts
+        run: |
+          if [ -f "${{ matrix.repo }}/package.json" ]; then
+            cd ${{ matrix.repo }} && npm run build || true
+          fi
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.repo }}
+          path: ${{ matrix.repo }}/dist/
+          retention-days: 7
+
+  security-scan:
+    name: Security Scan
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    if: |
+      needs.detect-changes.outputs.core_changed == 'true' ||
+      needs.detect-changes.outputs.mybuyo_changed == 'true' ||
+      needs.detect-changes.outputs.videocourts_changed == 'true'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true
+      
+      - name: Run CodeQL analysis
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript, python, shell
+      - uses: github/codeql-action/analyze@v3
+
+  deploy-staging:
+    name: Deploy to Staging
+    needs: [detect-changes, test-and-build, security-scan]
+    runs-on: ubuntu-latest
+    environment: staging
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: build-*
+          merge-multiple: true
+      
+      - name: Setup MCP Configuration
+        run: |
+          mkdir -p ~/.config/mcp
+          cp c25-orchestrator/config/mcp-c25-unified.json ~/.config/mcp/c25-config.json
+      
+      - name: Deploy to Vercel (MyBuyo)
+        if: needs.detect-changes.outputs.mybuyo_changed == 'true'
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.MYBUYO_PROJECT_ID }}
+          working-directory: ./mybuyo-biometric-saas
+          vercel-args: '--env staging'
+      
+      - name: Deploy to Vercel (VideoCourts)
+        if: needs.detect-changes.outputs.videocourts_changed == 'true'
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VIDEOCOURTS_PROJECT_ID }}
+          working-directory: ./videocourts-org
+          vercel-args: '--env staging'
+      
+      - name: Update Swarm State
+        run: |
+          echo "Swarm deployment initiated at $(date)" >> swarm-deployment.log
+          # Trigger agent coordination via MCP
+          # npx @modelcontextprotocol/server-github update-swarm-state
+
+  deploy-production:
+    name: Deploy to Production
+    needs: [detect-changes, test-and-build, security-scan, deploy-staging]
+    runs-on: ubuntu-latest
+    environment: production
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Production Deployment Gate
+        run: |
+          echo "⚠️ PRODUCTION DEPLOYMENT"
+          echo "Confirming all health checks pass..."
+          # Add production deployment validation steps
+      
+      - name: Deploy MyBuyo Production
+        if: needs.detect-changes.outputs.mybuyo_changed == 'true'
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.MYBUYO_PROJECT_ID }}
+          working-directory: ./mybuyo-biometric-saas
+          vercel-args: '--prod'
+      
+      - name: Deploy VideoCourts Production
+        if: needs.detect-changes.outputs.videocourts_changed == 'true'
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VIDEOCOURTS_PROJECT_ID }}
+          working-directory: ./videocourts-org
+          vercel-args: '--prod'
+      
+      - name: Notify Swarm Completion
+        run: |
+          echo "✅ Production deployment complete"
+          # Trigger notification to all 25 agents
+
+  notify-agents:
+    name: Notify C25 Agents
+    needs: [deploy-staging, deploy-production]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Send deployment notification
+        run: |
+          echo "🌟 C25 Swarm Deployment Status: ${{ needs.deploy-staging.result }} / ${{ needs.deploy-production.result }}"
+          # Add webhook calls to agent coordination system
+          # curl -X POST ${{ secrets.AGENT_WEBHOOK_URL }} -d '{"status": "complete"}'

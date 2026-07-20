@@ -1,0 +1,147 @@
+{
+  "mcpServers": {
+    "c25-github-core": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}",
+        "GITHUB_ORG": "Constellation25"
+      },
+      "description": "Primary GitHub access for Constellation25 organization - manages repos, issues, PRs across all 36 projects"
+    },
+    "c25-desktop-commander": {
+      "command": "npx",
+      "args": ["-y", "desktop-commander"],
+      "env": {
+        "ALLOWED_PATHS": "/workspace/c25-orchestrator,/workspace/constellation25,/workspace/c25-*"
+      },
+      "description": "Local file and terminal operations for C25 swarm coordination"
+    },
+    "c25-playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp-server"],
+      "env": {
+        "BROWSER_NAME": "chromium"
+      },
+      "description": "Browser automation for testing C25 web interfaces (VideoCourts, MyBuyo, etc.)"
+    },
+    "c25-sqlite-local": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sqlite"],
+      "env": {
+        "SQLITE_DB_PATH": "/workspace/c25-orchestrator/data/swarm-state.db"
+      },
+      "description": "Local state persistence for agent coordination and biometric data caching"
+    },
+    "c25-filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem"],
+      "args-extra": ["/workspace/c25-orchestrator", "/workspace/constellation25"],
+      "description": "Safe filesystem access for monorepo management"
+    },
+    "c25-git": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-git"],
+      "env": {
+        "GIT_AUTHOR_NAME": "C25 Swarm Agent",
+        "GIT_AUTHOR_EMAIL": "swarm@constellation25.dev"
+      },
+      "description": "Git operations across all 36 C25 repositories"
+    },
+    "c25-memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "env": {
+        "MEMORY_FILE_PATH": "/workspace/c25-orchestrator/data/swarm-memory.json"
+      },
+      "description": "Persistent memory for agent learning and cross-repo context"
+    },
+    "c25-fetch": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-fetch"],
+      "description": "Web fetching for external API integration (biometric services, video processing)"
+    },
+    "c25-puppeteer": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-puppeteer"],
+      "description": "Advanced browser automation for VideoCourts evidence collection and MyBuyo demos"
+    },
+    "c25-serpapi": {
+      "command": "npx",
+      "args": ["-y", "@serpapi/mcp-server"],
+      "env": {
+        "SERPAPI_API_KEY": "${SERPAPI_API_KEY}"
+      },
+      "description": "Search capabilities for research and competitive analysis"
+    },
+    "c25-notion": {
+      "command": "npx",
+      "args": ["-y", "@notionhq/mcp-server"],
+      "env": {
+        "NOTION_API_KEY": "${NOTION_API_KEY}"
+      },
+      "description": "Documentation sync with Notion workspace for C25 project tracking"
+    },
+    "c25-stripe": {
+      "command": "npx",
+      "args": ["-y", "@stripe/mcp-server"],
+      "env": {
+        "STRIPE_SECRET_KEY": "${STRIPE_SECRET_KEY}"
+      },
+      "description": "Payment processing for MyBuyo SaaS subscription management"
+    },
+    "c25-vercel": {
+      "command": "npx",
+      "args": ["-y", "@vercel/mcp-server"],
+      "env": {
+        "VERCEL_TOKEN": "${VERCEL_TOKEN}",
+        "VERCEL_ORG_ID": "${VERCEL_ORG_ID}"
+      },
+      "description": "Deployment automation for C25 web applications"
+    },
+    "c25-sentry": {
+      "command": "npx",
+      "args": ["-y", "@getsentry/mcp-server"],
+      "env": {
+        "SENTRY_AUTH_TOKEN": "${SENTRY_AUTH_TOKEN}",
+        "SENTRY_ORG": "constellation25",
+        "SENTRY_PROJECT": "c25-swarm"
+      },
+      "description": "Error monitoring across all C25 agents and applications"
+    },
+    "c25-docker": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "mcp/docker-server"],
+      "description": "Container management for agent isolation and deployment"
+    }
+  },
+  "c25SwarmConfig": {
+    "organization": "Constellation25",
+    "totalRepositories": 36,
+    "coreRepos": [
+      "constellation25",
+      "c25-monorepo",
+      "c25-master",
+      "c25-deploy-router",
+      "c25-training-corpus",
+      "c25-constellation25-swarm"
+    ],
+    "applicationRepos": [
+      "mybuyo-biometric-saas",
+      "videocourts-org",
+      "videocourts_backend",
+      "aimetaverse-demo",
+      "sovereign-ai-empire"
+    ],
+    "infrastructureRepos": [
+      "c25-fdroid-repo",
+      "c25-termux-addon",
+      "c25-secure-github-auth",
+      "llama.cpp"
+    ],
+    "agentCount": 25,
+    "coordinationStrategy": "celestial-body-model",
+    "dataPath": "/workspace/c25-orchestrator/data",
+    "logPath": "/workspace/c25-orchestrator/logs"
+  }
+}
